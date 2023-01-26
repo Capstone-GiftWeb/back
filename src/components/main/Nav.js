@@ -5,8 +5,11 @@ const Nav = () => {
     return (
         <header>
             <div className="header--logo">
-                <a href="/">
+                <a href="/" style={{ textDecoration: "none", color: "black"}}>
                     <img src="img/mainNavIcon.png" alt="home_logo" />
+                </a>
+                <a href="/" style={{ textDecoration: "none", color: "black"}}>
+                    상상부기
                 </a>
             </div>
             <div className="header--link">
