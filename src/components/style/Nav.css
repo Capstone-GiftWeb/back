@@ -1,0 +1,35 @@
+header {
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    transition: 0.5s all ease;
+}
+
+.header--logo {
+    height: 40px;
+    margin-left: 20px;
+    margin-right: 60px;
+}
+.header--logo img {
+    height: 100%;
+}
+
+.header--user {
+    position: absolute;
+    margin-left: 96%;
+    height: 35px;
+}
+
+.header--user img {
+    height: 100%;
+}
+
+a {
+    padding: 10px;
+}

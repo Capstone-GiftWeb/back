@@ -8,13 +8,13 @@ import Category from "./components/details/Category";
 import Price from "./components/details/Price";
 import Relationship from "./components/details/Age";
 import { Route, Routes } from 'react-router-dom';
-import './style/App.css';
+import './components/style/App.css';
 
 const App = () => (
   <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/Login" element={<Login />} />
-    <Route path="/signup" element={<Signup />} />
+    <Route path="/Signup" element={<Signup />} />
     <Route path="/Age" element={<Age />} />
     <Route path="/Anniversary" element={<Anniversary />} />
     <Route path="/Category" element={<Category />} />

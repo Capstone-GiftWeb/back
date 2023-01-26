@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Nav from '../main/Nav';
+import Nav from './Nav';
 import '../style/Home.css'
 
 const Home = () => {
