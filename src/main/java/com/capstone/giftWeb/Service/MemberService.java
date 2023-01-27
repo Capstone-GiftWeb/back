@@ -36,7 +36,10 @@ public class MemberService {
         if(!member.matchPassword(logInCommand.getPassword())) {
             throw new IdPasswordNotMatchingException();
         }
-        return new AuthInfo(member.getEmail(), member.getName());
+        return AuthInfo.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .password(member.getPassword()).build();
     }
 
 }

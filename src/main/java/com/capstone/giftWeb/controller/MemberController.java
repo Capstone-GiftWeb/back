@@ -41,7 +41,7 @@ public class MemberController {
         member.setPassword(memberForm.getPassword());
         memberService.createMember(member);
 
-        return "redirect:/";
+        return "redirect:/members/login";
     }
 
     @GetMapping("/login")
