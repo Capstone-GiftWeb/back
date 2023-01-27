@@ -35,31 +35,31 @@ public class MemberController {
 
     @PostMapping("/new")
     public String createMember(@Valid SignUpMemberForm memberForm) {
-        Member member = new Member();
-        member.setName(memberForm.getName());
-        member.setEmail(memberForm.getEmail());
-        member.setPassword(memberForm.getPassword());
+        Member member = Member.builder()
+                .name(memberForm.getName())
+                .email(memberForm.getEmail())
+                .password(memberForm.getPassword()).build();
         memberService.createMember(member);
 
         return "redirect:/members/login";
     }
 
     @GetMapping("/login")
-    public String createLogInForm(LogInCommand logInCommand, @CookieValue(value = "REMEMBER",required = false) Cookie rememberCookie, Model model){
+    public String createLogInForm(LogInCommand logInCommand, @CookieValue(value = "REMEMBER", required = false) Cookie rememberCookie, Model model) {
 
-        if (rememberCookie!=null){
+        if (rememberCookie != null) {
             logInCommand.setEmail(rememberCookie.getValue());
             logInCommand.setRememberId(true);
-            model.addAttribute("logInCommand",logInCommand);
+            model.addAttribute("logInCommand", logInCommand);
         }
 
         return "member/logInMemberForm";
     }
 
     @PostMapping("/login")
-    public String logInMember(@Valid LogInCommand logInCommand, Model model,BindingResult bindingResult, HttpSession httpSession, HttpServletResponse response)throws Exception{
+    public String logInMember(@Valid LogInCommand logInCommand, Model model, BindingResult bindingResult, HttpSession httpSession, HttpServletResponse response) throws Exception {
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return "member/logInMemberForm";
         }
 
@@ -70,8 +70,8 @@ public class MemberController {
 
             Cookie rememberCookie = new Cookie("REMEMBER", logInCommand.getEmail());
             rememberCookie.setPath("/");
-            if(logInCommand.isRememberId()) {
-                rememberCookie.setMaxAge(60*60*24*7);
+            if (logInCommand.isRememberId()) {
+                rememberCookie.setMaxAge(60 * 60 * 24 * 7);
             } else {
                 rememberCookie.setMaxAge(0);
             }
@@ -85,7 +85,7 @@ public class MemberController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session){
+    public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
     }
