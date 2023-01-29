@@ -6,7 +6,7 @@ import Age from "./components/details/Age";
 import Anniversary from "./components/details/Anniversary";
 import Category from "./components/details/Category";
 import Price from "./components/details/Price";
-import Relationship from "./components/details/Age";
+import Relationship from './components/details/Relationship';
 import { Route, Routes } from 'react-router-dom';
 import './components/style/App.css';
 
