@@ -19,6 +19,10 @@ public class Member {
 
     private String password;
 
+    public boolean matchPassword(String password){
+        return this.password.equals(password);
+    }
+
 
 
     @Builder
