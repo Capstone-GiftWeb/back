@@ -1,0 +1,144 @@
+{
+  "id":"4531000",
+  "test_list":
+  [
+    {
+      "name":"K-AARS",
+      "full_name":"성인 K-AARS 검사",
+      "description":"K-AARS 검사는 ... 검사입니다.",
+      "duration":"10~15분",
+      "instruction":"설문 답변시에는 ...에 주의해 주세요.",
+      "question_group_list":[
+        {
+          "name":"1",
+          "instruction":"그룹 설문 답변 지침",
+          "question_list":[
+            {
+              "no":1,
+              "type":"objective",
+              "mandatory":1,
+              "question":"1-1. 어떤 일을 시작하기가 어렵다.",
+              "sample":"",
+              "choice_list":[
+                "전혀 아니다.",
+                "드물게 그렇다.",
+                "가끔 그렇다.",
+                "자주 그렇다.",
+                "항상 그렇다."
+              ]
+            }
+
+          ]
+        },
+        {
+          "name":"2",
+          "instruction":"그룹 설문 답변 지침",
+          "question_list":[
+            {
+              "no":1,
+              "type":"objective",
+              "mandatory":1,
+              "question":"2-1. 가족과의 관계에 문제가 있다(예 : 부모님이나 형제와의 관계).",
+              "sample":"",
+              "choice_list":[
+                "해당없음",
+                "전혀 아니다.",
+                "드물게 그렇다.",
+                "가끔 그렇다.",
+                "자주 그렇다.",
+                "항상 그렇다."
+              ]
+            },
+            {
+              "no":2,
+              "type":"objective",
+              "mandatory":1,
+              "question":"2-2. 배우자나 연인과의 관계에 문제가 있다.",
+              "sample":"",
+              "choice_list":[
+                "해당없음",
+                "전혀 아니다.",
+                "드물게 그렇다.",
+                "가끔 그렇다.",
+                "자주 그렇다.",
+                "항상 그렇다."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":"K-AARS222",
+      "full_name":"성인222 K-AARS 검사",
+      "description":"K-AARS222 검사는 ... 검사입니다.",
+      "duration":"10~15분",
+      "instruction":"설문 답변시에는 ...에 주의해 주세요.",
+      "question_group_list":[
+        {
+          "name":"1",
+          "instruction":"그룹 설문 답변 지침",
+          "question_list":[
+            {
+              "no":1,
+              "type":"objective",
+              "mandatory":1,
+              "question":"1-1. 어떤 일을 시작하기가 어렵다.!",
+              "sample":"",
+              "choice_list":[
+                "전혀 아니다.",
+                "드물게 그렇다.",
+                "가끔 그렇다.",
+                "자주 그렇다.",
+                "항상 그렇다."
+              ]
+            }
+
+          ]
+        },
+        {
+          "name":"2",
+          "instruction":"그룹 설문 답변 지침",
+          "question_list":[
+            {
+              "no":1,
+              "type":"objective",
+              "mandatory":1,
+              "question":"2-1. 가족과의 관계에 문제가 있다(예 : 부모님이나 형제와의 관계).!",
+              "sample":"",
+              "choice_list":[
+                "해당없음",
+                "전혀 아니다.",
+                "드물게 그렇다.",
+                "가끔 그렇다.",
+                "자주 그렇다.",
+                "항상 그렇다."
+              ]
+            }
+          ]
+        },
+        {
+          "name":"3",
+          "instruction":"그룹 설문 답변 지침",
+          "question_list":[
+            {
+              "no":1,
+              "type":"objective",
+              "mandatory":1,
+              "question":"3-1. 출발하기 전에 모든 거울을 확인하고 안전띠를 맨다.!",
+              "sample":"",
+              "choice_list":[
+                "전혀 아니다.",
+                "드물게 그렇다.",
+                "가끔 그렇다.",
+                "자주 그렇다.",
+                "항상 그렇다."
+              ]
+            }
+          ]
+        }
+      ]
+    }
+
+  ]
+}
