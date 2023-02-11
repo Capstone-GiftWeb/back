@@ -1,76 +1,31 @@
 {
-  "id": "123",
-  "type": "navigable",
-  "rules": [{
-    "type": "conditional",
-    "triggerStepIdentifier": {
-      "id": "7"
-    },
-    "values": {
-      "Yes": "2",
-      "No": "8"
-    }
-  },
-    {
-      "type": "direct",
-      "triggerStepIdentifier": {
-        "id": "1"
-      },
-      "destinationStepIdentifier": {
-        "id": "3"
-      }
-    },
-    {
-      "type": "conditional",
-      "triggerStepIdentifier": {
-        "id": "6"
-      },
-      "values": {
-        "Penicillin": "7",
-        "Penicillin,Latex": "7",
-        "Penicillin,Latex,Pet": "11",
-        "Penicillin,Latex,Pet,Pollen": "11",
-        "Penicillin,Pet": "11",
-        "Penicillin,Pet,Pollen": "11",
-        "Penicillin,Pollen": "7",
-        "Latex": "7",
-        "Latex,Pet": "11",
-        "Latex,Pet,Pollen": "11",
-        "Latex,Pollen": "7",
-        "Pet": "11",
-        "Pet,Pollen": "11",
-        "Pollen": "7"
-      }
-    },
-    {
-      "type": "direct",
-      "triggerStepIdentifier": {
-        "id": "11"
-      },
-      "destinationStepIdentifier": {
-        "id": "7"
-      }
-    }
-  ],
   "steps": [{
     "stepIdentifier": {
       "id": "1"
     },
     "type": "intro",
-    "title": "Welcome to the\nQuickBird Studios\nHealth Survey",
-    "text": "Get ready for a bunch of super random questions!",
-    "buttonText": "Let's go!"
+    "title": "설문조사를 통한 선물 추천",
+    "text": "나오는 질문들을 통해 주고 싶은 선물을 추천받아 보세요.",
+    "buttonText": "추천받으러 go!"
   },
     {
       "stepIdentifier": {
         "id": "2"
       },
       "type": "question",
-      "title": "How old are you?",
+      "title": "당신의 나이는?",
       "answerFormat": {
-        "type": "integer",
-        "defaultValue": 25,
-        "hint": "Please enter your age"
+        "type": "single",
+        "hint": "당신의 나이를 입력해주세요.",
+        "choice_list":[
+          "0~10",
+          "11~20",
+          "21~30",
+          "31~40",
+          "41~50",
+          "51~60",
+          "그 이상"
+        ]
       }
     },
     {
@@ -78,13 +33,13 @@
         "id": "3"
       },
       "type": "question",
-      "title": "Medication?",
-      "text": "Are you using any medication",
+      "title": "당신의 성별은?",
       "answerFormat": {
-        "type": "bool",
-        "positiveAnswer": "Yes",
-        "negativeAnswer": "No",
-        "result": "POSITIVE"
+        "choice_list":[
+          "남자",
+          "여자"
+        ],
+        "type": "single"
       }
     },
     {
@@ -92,12 +47,17 @@
         "id": "4"
       },
       "type": "question",
-      "title": "Tell us about you",
-      "text": "Tell us about yourself and why you want to improve your health.",
+      "title": "선물받을 사람과의 관계는?",
       "answerFormat": {
-        "type": "text",
-        "maxLines": 5,
-        "validationRegEx": "^(?!\\s*\\$).+"
+        "type": "single",
+        "choice_list": [
+          "아버지",
+          "어머니",
+          "친척",
+          "연인",
+          "친구",
+          "형제(혹은 자매)"
+        ]
       }
     },
     {
@@ -105,15 +65,13 @@
         "id": "5"
       },
       "type": "question",
-      "title": "Select your body type",
+      "title": "받는 사람의 성별은?",
       "answerFormat": {
-        "type": "scale",
-        "step": 1,
-        "minimumValue": 1,
-        "maximumValue": 5,
-        "defaultValue": 3,
-        "minimumValueDescription": "1",
-        "maximumValueDescription": "5"
+        "type": "single",
+        "choice_list": [
+          "남자",
+          "여자"
+        ]
       }
     },
     {
@@ -121,25 +79,18 @@
         "id": "6"
       },
       "type": "question",
-      "title": "Known allergies",
+      "title": "받는 사람의 나이는?",
       "answerFormat": {
-        "type": "multiple",
-        "textChoices": [{
-          "text": "Penicillin",
-          "value": "Penicillin"
-        },
-          {
-            "text": "Latex",
-            "value": "Latex"
-          },
-          {
-            "text": "Pet",
-            "value": "Pet"
-          },
-          {
-            "text": "Pollen",
-            "value": "Pollen"
-          }
+        "type": "single",
+        "hint": "받는 사람의 나이를 입력해주세요.",
+        "choice_list":[
+          "0~10",
+          "11~20",
+          "21~30",
+          "31~40",
+          "41~50",
+          "51~60",
+          "그 이상"
         ]
       }
     },
@@ -148,18 +99,14 @@
         "id": "7"
       },
       "type": "question",
-      "title": "Done?",
-      "text": "We are done, do you mind to tell us more about yourself?",
+      "title": "어떤 기념일을 위한 선물인가요?",
       "answerFormat": {
         "type": "single",
-        "textChoices": [{
-          "text": "Yes",
-          "value": "Yes"
-        },
-          {
-            "text": "No",
-            "value": "No"
-          }
+        "choice_list": [
+          "생일",
+          "발렌타인 데이",
+          "집들이",
+          "기타"
         ]
       }
     },
@@ -168,13 +115,22 @@
         "id": "8"
       },
       "type": "question",
-      "title": "When did you wake up?",
+      "title": "원하는 선물의 카테고리를 골라주세요.",
       "answerFormat": {
-        "type": "time",
-        "defaultValue": {
-          "hour": 12,
-          "minute": 0
-        }
+        "type": "single",
+        "choice_list": [
+          "식품",
+          "화장품/향수",
+          "패션",
+          "리빙",
+          "건강",
+          "카카오프렌즈",
+          "명품 패션",
+          "가전/디지털",
+          "꽃배달/도서",
+          "레저/스포츠",
+          "출산/유아동"
+        ]
       }
     },
     {
@@ -182,106 +138,14 @@
         "id": "9"
       },
       "type": "question",
-      "title": "When was your last holiday?",
+      "title": "원하는 가격대를 골라주세요.",
       "answerFormat": {
-        "type": "date",
-        "minDate": "2015-06-25T04:08:16Z",
-        "maxDate": "2025-06-25T04:08:16Z",
-        "defaultDate": "2021-06-25T04:08:16Z"
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "12"
-      },
-      "type": "question",
-      "title": "Known allergies",
-      "answerFormat": {
-        "type": "multiple",
-        "otherField": true,
-        "textChoices": [{
-          "text": "Penicillin",
-          "value": "Penicillin"
-        },
-          {
-            "text": "Latex",
-            "value": "Latex"
-          },
-          {
-            "text": "Pet",
-            "value": "Pet"
-          },
-          {
-            "text": "Pollen",
-            "value": "Pollen"
-          }
-        ]
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "13"
-      },
-      "type": "question",
-      "title": "Medicines",
-      "answerFormat": {
-        "type": "multiple_auto_complete",
-        "otherField": true,
-        "textChoices": [{
-          "text": "Penicillin",
-          "value": "Penicillin"
-        },
-          {
-            "text": "Latex",
-            "value": "Latex"
-          }
-
-        ],
-        "suggestions": [{
-          "text": "Pet",
-          "value": "Pet"
-        },
-          {
-            "text": "Pollen",
-            "value": "Pollen"
-          }
-        ]
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "10"
-      },
-      "type": "completion",
-      "text": "Thanks for taking the survey, we will contact you soon!",
-      "title": "Done!",
-      "buttonText": "Restart"
-    },
-    {
-      "stepIdentifier": {
-        "id": "11"
-      },
-      "type": "question",
-      "title": "Pets",
-      "text": "What type of pet(s) do you have?",
-      "answerFormat": {
-        "type": "multiple",
-        "textChoices": [{
-          "text": "Dog",
-          "value": "Dog"
-        },
-          {
-            "text": "Cat",
-            "value": "Cat"
-          },
-          {
-            "text": "Fish",
-            "value": "Fish"
-          },
-          {
-            "text": "Small Animal",
-            "value": "Small Animal"
-          }
+        "type": "single",
+        "choice_list": [
+          "1만원 미만",
+          "1-2만원대",
+          "3-4만원대",
+          "5만원 이상"
         ]
       }
     }
