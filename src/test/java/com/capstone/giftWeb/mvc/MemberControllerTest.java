@@ -2,7 +2,6 @@ package com.capstone.giftWeb.mvc;
 
 import com.capstone.giftWeb.Service.MemberService;
 import com.capstone.giftWeb.controller.MemberController;
-import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
