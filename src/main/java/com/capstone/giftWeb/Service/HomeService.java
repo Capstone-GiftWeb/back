@@ -48,10 +48,14 @@ public class HomeService {
         List<String> list = new ArrayList<>();
 
         driver.get(url);
-        List<WebElement> elements = driver.findElements(By.cssSelector("#mArticle > app-pw-home > div > app-pw-best-ranking > div > app-pw-best-delivery > app-best-list > cu-infinite-scroll > div > div > ol > li:nth-child(6) > app-view-best-ranking-product"));
+        driver.manage().timeouts().implicitlyWait(Duration.ofMinutes(5));
+        List<WebElement> elements = driver.findElements(By.cssSelector("#mArticle > app-pw-home > div > app-pw-best-ranking > div > app-pw-best-delivery > app-best-list > cu-infinite-scroll > div > div > ol > li > app-view-best-ranking-product"));
 
         System.out.println("=======================================");
-        System.out.println(elements.toString());
+        for (WebElement element:elements
+             ) {
+            System.out.println(element.getText());
+        }
         System.out.println("=======================================");
 
         return list;
