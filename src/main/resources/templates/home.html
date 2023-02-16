@@ -11,5 +11,8 @@
       <p>유저 [[${session.authInfo.getName()}]]님 반갑습니다</p>
 </div>
 <a th:if="${session.authInfo != null}" href="http://localhost:8080/members/logout">Logout</a>
+<th:block th:each="gift: ${gifts}">
+    <div th:utext="${gift}"></div>
+</th:block>
 </body>
 </html>

@@ -39,8 +39,16 @@ public class HomeService {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        driver.close();
-        driver.quit();
+        try {
+            if(driver != null) {
+                //드라이버 연결 종료
+                driver.close(); //드라이버 연결 해제
+                //프로세스 종료
+                driver.quit();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
         return list;
     }
 
@@ -53,7 +61,7 @@ public class HomeService {
 
         for (WebElement element:elements
              ) {
-            list.add(element.getText());
+            list.add(element.getAttribute("outerHTML").replace("<!---->",""));
         }
         return list;
     }

@@ -32,8 +32,7 @@ public class HomeController {
     public String home(Model model) {
         List<String> list=homeService.makeGifts();
 
-        model.addAttribute("gifts", list.toString());
-
+        model.addAttribute("gifts", list);
 
         return "home";
     }
