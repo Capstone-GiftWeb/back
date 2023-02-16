@@ -51,13 +51,10 @@ public class HomeService {
         driver.manage().timeouts().implicitlyWait(Duration.ofMinutes(5));
         List<WebElement> elements = driver.findElements(By.cssSelector("#mArticle > app-pw-home > div > app-pw-best-ranking > div > app-pw-best-delivery > app-best-list > cu-infinite-scroll > div > div > ol > li > app-view-best-ranking-product"));
 
-        System.out.println("=======================================");
         for (WebElement element:elements
              ) {
-            System.out.println(element.getText());
+            list.add(element.getText());
         }
-        System.out.println("=======================================");
-
         return list;
     }
 }
