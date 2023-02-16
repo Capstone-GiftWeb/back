@@ -29,19 +29,11 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(HttpServletRequest request, Model model) {
-        HttpSession session = request.getSession();
+    public String home(Model model) {
+        List<String> list=homeService.makeGifts();
 
-        String gifts = (String) session.getAttribute("gifts");
-        if (gifts != null) {
-            model.addAttribute("gifts", session.getAttribute("gifts"));
-            System.out.println(gifts);
-        } else {
-            List<String> list = homeService.makeGifts();
-            session.setMaxInactiveInterval(60 * 60);
-            session.setAttribute("gifts", list.toString());
-            model.addAttribute("gifts", session.getAttribute("gifts"));
-        }
+        model.addAttribute("gifts", list.toString());
+
 
         return "home";
     }
