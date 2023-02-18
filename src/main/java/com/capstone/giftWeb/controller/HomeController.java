@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,12 @@ public class HomeController {
         model.addAttribute("gifts", list);
 
         return "home";
+    }
+
+    @GetMapping("/product/{number}")
+    public String giftKakao(@PathVariable("number") String number){
+
+        return "redirect:https://gift.kakao.com/product/"+number;
     }
 
 }
