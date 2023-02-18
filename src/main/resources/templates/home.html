@@ -8,11 +8,13 @@
 <p>어서오세요. 우리는 선물을 추천해드립니다.</p>  <!--테스트 사이트임.-->
 <a th:if="${session.authInfo==null}" href="/members/login">로그인</a>
 <div th:if="${session.authInfo!=null}">
-      <p>유저 [[${session.authInfo.getName()}]]님 반갑습니다</p>
+    <p>유저 [[${session.authInfo.getName()}]]님 반갑습니다</p>
 </div>
 <a th:if="${session.authInfo != null}" href="http://localhost:8080/members/logout">Logout</a>
-<th:block th:each="gift: ${gifts}">
-    <div th:utext="${gift}"></div>
-</th:block>
+<table>
+    <th:block th:each="gift: ${gifts}">
+        <div th:utext="${gift}"></div>
+    </th:block>
+</table>
 </body>
 </html>
