@@ -8,6 +8,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -16,7 +18,7 @@ import java.util.List;
 
 @Service
 public class GiftService {
-
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private WebDriver driver;
 
     private static final String url = "https://gift.kakao.com/ranking/best/delivery"; //카카오톡 선물하기 '많이 선물한' 랭킹
@@ -24,7 +26,6 @@ public class GiftService {
     public List<String> makeGifts() {
 
         System.setProperty("webdriver.chrome.driver", "./chromedriver/chromedriver.exe");
-        //파이어폭스 드라이버 셋팅 (드라이버 설치한 경로 입력)
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-popup-blocking");       //팝업안띄움
@@ -34,10 +35,10 @@ public class GiftService {
         driver = new ChromeDriver(options);
 
         List<String> list;
-        try {
-            list = getDataList();
-        } finally {
+        list = getDataList();
+        if(driver!=null) {
             driver.close();
+            driver.quit();
         }
 
         return list;
@@ -49,7 +50,7 @@ public class GiftService {
         try {
             driver.get(url);
             webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
-            Actions actions=new Actions(driver);
+            Actions actions = new Actions(driver);
             List<WebElement> elements = driver.findElements(By.cssSelector("app-view-best-ranking-product"));
             for (WebElement element : elements
             ) {
@@ -58,7 +59,7 @@ public class GiftService {
                 list.add(element.getAttribute("outerHTML"));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
         }
         return list;
     }
