@@ -22,26 +22,12 @@ import java.util.List;
 @Controller
 public class HomeController {
 
-    private final HomeService homeService;
-
-    @Autowired
-    public HomeController(HomeService homeService) {
-        this.homeService = homeService;
-    }
-
     @GetMapping("/")
     public String home(Model model) {
-        List<String> list=homeService.makeGifts();
-
-        model.addAttribute("gifts", list);
 
         return "home";
     }
 
-    @GetMapping("/product/{number}")
-    public String giftKakao(@PathVariable("number") String number){
 
-        return "redirect:https://gift.kakao.com/product/"+number;
-    }
 
 }
