@@ -37,7 +37,6 @@ public class GiftService {
         List<String> list;
         list = getDataList();
         if(driver!=null) {
-            driver.close();
             driver.quit();
         }
 
