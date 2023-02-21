@@ -39,7 +39,9 @@ public class MemberService {
         return AuthInfo.builder()
                 .email(member.getEmail())
                 .name(member.getName())
-                .password(member.getPassword()).build();
+                .password(member.getPassword())
+                .gender(member.getGender())
+                .age(member.getAge()).build();
     }
 
 }

@@ -5,6 +5,7 @@ import com.capstone.giftWeb.auth.AuthInfo;
 import com.capstone.giftWeb.domain.Member;
 import com.capstone.giftWeb.dto.LogInCommand;
 import com.capstone.giftWeb.dto.SignUpMemberForm;
+import com.capstone.giftWeb.enums.Gender;
 import com.capstone.giftWeb.exception.IdPasswordNotMatchingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+
+import static com.capstone.giftWeb.enums.Gender.FEMALE;
+import static com.capstone.giftWeb.enums.Gender.MALE;
 
 @Controller
 @RequestMapping("/members")
@@ -35,10 +39,18 @@ public class MemberController {
 
     @PostMapping("/new")
     public String createMember(@Valid SignUpMemberForm memberForm) {
+        Gender gender = null;
+        if (memberForm.getGender().equals("남자")){
+            gender= MALE;
+        }else if(memberForm.getGender().equals("여자")){
+            gender=FEMALE;
+        }
         Member member = Member.builder()
                 .name(memberForm.getName())
                 .email(memberForm.getEmail())
-                .password(memberForm.getPassword()).build();
+                .password(memberForm.getPassword())
+                .gender(gender)
+                .age(memberForm.getAge()).build();
         memberService.createMember(member);
 
         return "redirect:/members/login";

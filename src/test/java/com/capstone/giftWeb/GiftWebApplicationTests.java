@@ -2,6 +2,7 @@ package com.capstone.giftWeb;
 
 import com.capstone.giftWeb.Service.MemberService;
 import com.capstone.giftWeb.domain.Member;
+import com.capstone.giftWeb.enums.Gender;
 import com.capstone.giftWeb.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ class GiftWebApplicationTests {
 		member.setEmail(email);
 		member.setPassword("1234");
 		member.setName("금한림");
+		member.setGender(Gender.MALE);
+		member.setAge(25);
 		memberService.createMember(member);
 
 		Member findMember=memberRepository.findByEmail(email).get();
@@ -42,12 +45,16 @@ class GiftWebApplicationTests {
 		member.setEmail(email);
 		member.setPassword("1234");
 		member.setName("금한림");
+		member.setGender(Gender.MALE);
+		member.setAge(25);
 		memberService.createMember(member);
 
 		Member member1 = new Member();
 		member.setEmail(email);
 		member.setPassword("1234");
 		member.setName("금한림");
+		member.setGender(Gender.MALE);
+		member.setAge(25);
 		try{
 			memberService.createMember(member1);
 		} catch (IllegalStateException e){
