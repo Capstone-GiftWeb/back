@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class GiftController {
@@ -18,10 +17,19 @@ public class GiftController {
     @Autowired
     GiftService giftService;
 
-    @GetMapping("/gifts")
+    @GetMapping("/gifts/all")
     @ResponseBody
     public GiftsDTO makeGifts(){
-        List<String> gifts=giftService.makeGifts();
+        List<String> gifts=giftService.makeAllGifts();
+        GiftsDTO giftsDTO=new GiftsDTO();
+        giftsDTO.setGifts(gifts);
+        return giftsDTO;
+    }
+
+    @GetMapping("/gifts")
+    @ResponseBody
+    public GiftsDTO makeCategoryGifts(@RequestParam("category")String category){
+        List<String> gifts=giftService.makeCategoryGifts(category);
         GiftsDTO giftsDTO=new GiftsDTO();
         giftsDTO.setGifts(gifts);
         return giftsDTO;
