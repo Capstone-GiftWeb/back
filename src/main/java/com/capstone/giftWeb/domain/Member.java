@@ -1,5 +1,6 @@
 package com.capstone.giftWeb.domain;
 
+import com.capstone.giftWeb.enums.Gender;
 import lombok.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
@@ -20,6 +21,11 @@ public class Member {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    private int age;
+
     public boolean matchPassword(String password){
         return this.password.equals(password);
     }
@@ -27,11 +33,13 @@ public class Member {
 
 
     @Builder
-    public Member(Long id,String name, String email, String password) {
+    public Member(Long id,String name, String email, String password,Gender gender,int age) {
         this.id=id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.gender=gender;
+        this.age=age;
     }
 
 
