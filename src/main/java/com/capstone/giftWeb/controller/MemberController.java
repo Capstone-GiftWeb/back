@@ -65,14 +65,14 @@ public class MemberController {
         if (rememberCookie != null) {
             logInCommand.setEmail(rememberCookie.getValue());
             logInCommand.setRememberId(true);
-            model.addAttribute("logInCommand", logInCommand);
         }
+        model.addAttribute("logInCommand", logInCommand);
 
         return "member/logInMemberForm";
     }
 
     @PostMapping("/login")
-    public String logInMember(@Valid LogInCommand logInCommand, Model model, BindingResult bindingResult, HttpSession httpSession, HttpServletResponse response) throws Exception {
+    public String logInMember(@Valid @ModelAttribute("logInCommand") LogInCommand logInCommand, BindingResult bindingResult, HttpSession httpSession, HttpServletResponse response) throws Exception {
 
         if (bindingResult.hasErrors()) {
             return "member/logInMemberForm";
@@ -93,7 +93,7 @@ public class MemberController {
             response.addCookie(rememberCookie);
 
         } catch (IdPasswordNotMatchingException e) {
-            bindingResult.rejectValue("pw", "notMatch", "아이디와 비밀번호가 맞지않습니다.");
+            bindingResult.rejectValue("password", "notMatch", "아이디와 비밀번호가 맞지않습니다.");
             return "/member/logInMemberForm";
         }
         return "redirect:/";

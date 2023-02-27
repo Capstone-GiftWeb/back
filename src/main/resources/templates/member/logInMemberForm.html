@@ -6,19 +6,27 @@
 </head>
 <body>
 <div class="panel-body">
-  <form action="/members/login" method="post">
+  <form action="/members/login" th:object="${logInCommand}" method="post">
     <fieldset>
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Email" name="email" th:value="${logInCommand.getEmail()}" />
+        <input type="text" th:field="*{email}" placeholder="Email" name="email" th:errorclass="error-class" th:value="${logInCommand.getEmail()}" />
+        <div class="error-class" th:errors="*{email}"></div>
       </div>
       <div class="form-group">
-        <input type="password" class="form-control" placeholder="Password" name="password"/>
+        <input type="password" th:field="*{password}" th:errorclass="error-class" placeholder="Password" name="password"/>
+        <div class="error-class" th:errors="*{password}"></div>
       </div>
       <div class="checkbox">
         <label>
           <input type="checkbox" name="rememberId" th:checked="${logInCommand.isRememberId()}">아이디 기억
         </label>
       </div>
+
+      <!-- 글로벌 에러 처리 부분 -->
+      <div th:if="${#fields.hasGlobalErrors()}">
+        <p class="error-class" th:each="err : ${#fields.globalErrors()}" th:text="${err}"/>
+      </div> <br/>
+
       <button type="submit" class="btn btn-lg btn-success btn-block">로그인</button>
     </fieldset>
   </form>

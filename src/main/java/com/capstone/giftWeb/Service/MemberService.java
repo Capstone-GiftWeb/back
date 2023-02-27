@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional(readOnly = true)
 public class MemberService {
@@ -29,9 +31,12 @@ public class MemberService {
     }
 
     public AuthInfo loginAuth(LogInCommand logInCommand) throws Exception{
-        Member member = memberRepository.findByEmail(logInCommand.getEmail()).get() ;
-        if(member == null) {
+        Optional<Member> findMember = memberRepository.findByEmail(logInCommand.getEmail());
+        Member member;
+        if(findMember.isEmpty()) {
             throw new IdPasswordNotMatchingException();
+        }else{
+            member=findMember.get();
         }
         if(!member.matchPassword(logInCommand.getPassword())) {
             throw new IdPasswordNotMatchingException();
