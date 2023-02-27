@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -32,13 +29,18 @@ public class MemberController {
     private MemberService memberService;
 
     @GetMapping("/new")
-    public String memberForm() {
+    public String memberForm(Model model) {
 
+        model.addAttribute("signUpMemberForm",new SignUpMemberForm());
         return "member/createMemberForm";
     }
 
     @PostMapping("/new")
-    public String createMember(@Valid SignUpMemberForm memberForm) {
+    public String createMember(@Valid @ModelAttribute("signUpMemberForm") SignUpMemberForm memberForm, BindingResult result) {
+
+        if (result.hasErrors()){
+            return "member/createMemberForm";
+        }
 
         Gender gender = null;
         if (memberForm.getGender().equals("남자")){
