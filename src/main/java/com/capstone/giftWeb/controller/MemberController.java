@@ -39,6 +39,7 @@ public class MemberController {
 
     @PostMapping("/new")
     public String createMember(@Valid SignUpMemberForm memberForm) {
+
         Gender gender = null;
         if (memberForm.getGender().equals("남자")){
             gender= MALE;
