@@ -9,12 +9,12 @@
 <a th:if="${session.authInfo==null}" href="/members/login">로그인</a>
 <div th:if="${session.authInfo!=null}">
     <p>유저 [[${session.authInfo.getName()}]]님 반갑습니다</p>
+    <p>[[${session.authInfo.getEmail()}]]</p>
+    <p>[[${session.authInfo.getAge()}]]</p>
+    <p>[[${session.authInfo.getGender()}]]</p>
+    <p>[[${session.authInfo.getPassword()}]]</p>
 </div>
 <a th:if="${session.authInfo != null}" href="http://localhost:8080/members/logout">Logout</a>
-<table>
-    <th:block th:each="gift: ${gifts}">
-        <div th:utext="${gift}"></div>
-    </th:block>
-</table>
+
 </body>
 </html>

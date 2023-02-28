@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import javax.persistence.*;
 
 @Getter @Setter
+@NoArgsConstructor
 @Entity
 public class Member {
     @Id
@@ -42,8 +43,4 @@ public class Member {
         this.age=age;
     }
 
-
-    public Member() {
-
-    }
 }

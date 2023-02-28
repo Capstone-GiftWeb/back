@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +37,7 @@ public class MemberController {
     }
 
     @PostMapping("/new")
-    public String createMember(@Valid @ModelAttribute("signUpMemberForm") SignUpMemberForm memberForm, BindingResult result) {
+    public String createMember(@Valid @ModelAttribute("signUpMemberForm") SignUpMemberForm memberForm, BindingResult result, RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()){
             return "member/createMemberForm";
@@ -55,6 +56,7 @@ public class MemberController {
                 .gender(gender)
                 .age(memberForm.getAge()).build();
         memberService.createMember(member);
+
 
         return "redirect:/members/login";
     }
