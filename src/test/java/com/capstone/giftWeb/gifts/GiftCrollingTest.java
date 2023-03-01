@@ -23,9 +23,13 @@ public class GiftCrollingTest {
     private static final String url = "https://gift.kakao.com/ranking/best/delivery"; //카카오톡 선물하기 '많이 선물한' 랭킹
 
 
+    @BeforeAll
+    static void 셋업(){
+        System.setProperty("webdriver.chrome.driver", "./chromedriver/chromedriver.exe");
+    }
+
     @BeforeEach
     public void setUp(){
-        System.setProperty("webdriver.chrome.driver", "./chromedriver/chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-popup-blocking");       //팝업안띄움
         options.addArguments("headless");                       //브라우저 안띄움

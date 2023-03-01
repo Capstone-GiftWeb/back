@@ -1,4 +1,5 @@
 package com.capstone.giftWeb.Service;
+
 import com.capstone.giftWeb.auth.AuthInfo;
 import com.capstone.giftWeb.dto.LogInCommand;
 import com.capstone.giftWeb.exception.IdPasswordNotMatchingException;
@@ -17,28 +18,28 @@ public class MemberService {
     private MemberRepository memberRepository;
 
     @Transactional
-    public Long createMember(Member member){
-        validateDuplicateMember(member);
+    public Member createMember(Member member) {
+        if(!validateDuplicateMember(member)){
+            return null;
+        }
         memberRepository.save(member);
-        return member.getId();
+        return member;
     }
 
-    private void validateDuplicateMember(Member member) {
-        memberRepository.findByEmail(member.getEmail())
-                .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 회원입니다.");
-                });
+    private boolean validateDuplicateMember(Member member) {
+        return memberRepository.findByEmail(member.getEmail())
+                .isEmpty();
     }
 
-    public AuthInfo loginAuth(LogInCommand logInCommand) throws Exception{
+    public AuthInfo loginAuth(LogInCommand logInCommand) throws Exception {
         Optional<Member> findMember = memberRepository.findByEmail(logInCommand.getEmail());
         Member member;
-        if(findMember.isEmpty()) {
+        if (findMember.isEmpty()) {
             throw new IdPasswordNotMatchingException();
-        }else{
-            member=findMember.get();
+        } else {
+            member = findMember.get();
         }
-        if(!member.matchPassword(logInCommand.getPassword())) {
+        if (!member.matchPassword(logInCommand.getPassword())) {
             throw new IdPasswordNotMatchingException();
         }
         return AuthInfo.builder()

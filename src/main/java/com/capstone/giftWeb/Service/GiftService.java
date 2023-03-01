@@ -44,25 +44,19 @@ public class GiftService {
 
     public List<String> makeAllGifts() {
 
-        ChromeDriver driver= setDriver();
 
         List<String> list;
-        list = getDataList(driver);
+        list = getDataList();
 
-        driver.close();
-        driver.quit();
 
         return list;
     }
 
     public List<String> makeCategoryGifts(String category) {
-       ChromeDriver driver= setDriver();
 
         List<String> list;
-        list = getCategoryDataList(url + "/" + map.get(category),driver);
+        list = getCategoryDataList(url + "/" + map.get(category));
 
-        driver.close();
-        driver.quit();
 
 
         return list;
@@ -80,7 +74,8 @@ public class GiftService {
         return new ChromeDriver(options);
     }
 
-    private List<String> getDataList(ChromeDriver driver) {
+    private List<String> getDataList() {
+        WebDriver driver=setDriver();
         List<String> list = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
@@ -96,11 +91,15 @@ public class GiftService {
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
+        }finally {
+            driver.quit();
         }
         return list;
     }
 
-    private List<String> getCategoryDataList(String categoryUrl,ChromeDriver driver) {
+    private List<String> getCategoryDataList(String categoryUrl) {
+        WebDriver driver=setDriver();
+
         List<String> list = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
@@ -116,6 +115,8 @@ public class GiftService {
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
+        }finally {
+            driver.quit();
         }
         return list;
     }
