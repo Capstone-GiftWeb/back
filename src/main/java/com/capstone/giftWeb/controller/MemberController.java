@@ -29,6 +29,7 @@ import static com.capstone.giftWeb.enums.Gender.MALE;
 
 @RestController
 @RequestMapping("/members")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MemberController {
 
     @Autowired
@@ -37,7 +38,7 @@ public class MemberController {
     private MemberRepository memberRepository;
 
     @PostMapping("/new")
-    public Object memberSignUp(@Valid @RequestBody SignUpMemberForm memberForm, BindingResult result) {
+    public Object memberSignUp(@Valid SignUpMemberForm memberForm, BindingResult result) {
 
         if (result.hasErrors()){
             List<ObjectError> allErrors = result.getAllErrors();
@@ -68,7 +69,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public Object logInMember(@Valid @RequestBody LogInCommand logInCommand, BindingResult result, HttpServletResponse response) throws Exception {
+    public Object logInMember(@Valid LogInCommand logInCommand, BindingResult result, HttpServletResponse response) throws Exception {
 
         if (result.hasErrors()) {
             List<ObjectError> allErrors = result.getAllErrors();
