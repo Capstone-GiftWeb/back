@@ -1,4 +1,4 @@
-package com.capstone.giftWeb.dto;
+package com.capstone.giftWeb.dto.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

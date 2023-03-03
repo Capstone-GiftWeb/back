@@ -1,4 +1,4 @@
-package com.capstone.giftWeb.dto;
+package com.capstone.giftWeb.dto.error;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

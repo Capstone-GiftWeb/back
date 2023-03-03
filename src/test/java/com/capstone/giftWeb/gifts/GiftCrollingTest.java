@@ -15,6 +15,7 @@ import org.testng.Assert;
 import java.net.SocketException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GiftCrollingTest {
@@ -53,6 +54,9 @@ public class GiftCrollingTest {
                 actions.moveToElement(element);
                 actions.perform();
                 list.add(element.getAttribute("outerHTML"));
+                String[] href=element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
+                Integer productId=Integer.valueOf(href[href.length-1]);
+                System.out.println(productId);
             }
         } catch (Exception e) {
             e.printStackTrace();

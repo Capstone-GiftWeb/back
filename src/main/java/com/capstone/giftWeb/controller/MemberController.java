@@ -3,23 +3,19 @@ package com.capstone.giftWeb.controller;
 import com.capstone.giftWeb.Service.MemberService;
 import com.capstone.giftWeb.auth.AuthInfo;
 import com.capstone.giftWeb.domain.Member;
-import com.capstone.giftWeb.dto.CreateError;
+import com.capstone.giftWeb.dto.error.CreateError;
 import com.capstone.giftWeb.dto.LogInCommand;
 import com.capstone.giftWeb.dto.SignUpMemberForm;
 import com.capstone.giftWeb.enums.Gender;
 import com.capstone.giftWeb.exception.IdPasswordNotMatchingException;
 import com.capstone.giftWeb.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import java.util.List;
