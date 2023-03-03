@@ -1,5 +1,7 @@
 package com.capstone.giftWeb.Service;
 
+import com.capstone.giftWeb.domain.Item;
+import com.capstone.giftWeb.repository.ItemRepository;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -10,6 +12,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -21,6 +24,9 @@ import java.util.Map;
 @Service
 public class GiftService {
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
+    @Autowired
+    ItemRepository itemRepository;
 
     //카테고리별 맵
     private static HashMap<String, Integer> map;
@@ -55,9 +61,8 @@ public class GiftService {
     public List<String> makeCategoryGifts(String category) {
 
         List<String> list;
-        list = getCategoryDataList(url + "/" + map.get(category));
-
-
+        int categoryNum=map.get(category);
+        list = getCategoryDataList(url + "/" + categoryNum,categoryNum);
 
         return list;
     }
@@ -97,7 +102,7 @@ public class GiftService {
         return list;
     }
 
-    private List<String> getCategoryDataList(String categoryUrl) {
+    private List<String> getCategoryDataList(String categoryUrl,Integer categoryNum) {
         WebDriver driver=setDriver();
 
         List<String> list = new ArrayList<>();
@@ -112,6 +117,7 @@ public class GiftService {
                 actions.moveToElement(element);
                 actions.perform();
                 list.add(element.getAttribute("outerHTML"));
+                saveCategoryItem(element,categoryNum);
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
@@ -119,5 +125,14 @@ public class GiftService {
             driver.quit();
         }
         return list;
+    }
+
+    private void saveCategoryItem(WebElement element,Integer categoryNum){
+        String[] href=element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
+        int productId= Integer.parseInt(href[href.length - 1]);
+        Item item=new Item();
+        item.setId((long) productId);
+        item.setCategory(categoryNum);
+        itemRepository.save(item);
     }
 }
