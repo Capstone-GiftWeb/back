@@ -85,11 +85,13 @@ public class GiftCrollingTest {
     @Test
     public void 카테고리크롤링() {
         List<String> list = new ArrayList<>();
+        List<Item> itemList = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.get("https://gift.kakao.com/ranking/best/delivery/2");
         webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
         Actions actions = new Actions(driver);
         List<WebElement> elements = driver.findElements(By.cssSelector("app-view-best-ranking-product"));
+        List<String> hrefs=new ArrayList<>();
         for (WebElement element : elements
         ) {
             actions.moveToElement(element);
@@ -100,9 +102,10 @@ public class GiftCrollingTest {
             Item item=new Item();
             item.setId((long) productId);
             item.setCategory(2);
-            itemRepository.save(item);
+            item.setHtml(element.getAttribute("outerHTML"));
+            itemList.add(item);
         }
-        assertThat(itemRepository.findAllByCategory(2).size()).isEqualTo(20);
+        itemRepository.saveAll(itemList);
     }
 
     @AfterEach

@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class GiftService {
@@ -61,8 +60,8 @@ public class GiftService {
     public List<String> makeCategoryGifts(String category) {
 
         List<String> list;
-        int categoryNum=map.get(category);
-        list = getCategoryDataList(url + "/" + categoryNum,categoryNum);
+        int categoryNum = map.get(category);
+        list = getCategoryDataList(url + "/" + categoryNum, categoryNum);
 
         return list;
     }
@@ -80,7 +79,7 @@ public class GiftService {
     }
 
     private List<String> getDataList() {
-        WebDriver driver=setDriver();
+        WebDriver driver = setDriver();
         List<String> list = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
@@ -96,16 +95,17 @@ public class GiftService {
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
-        }finally {
+        } finally {
             driver.quit();
         }
         return list;
     }
 
-    private List<String> getCategoryDataList(String categoryUrl,Integer categoryNum) {
-        WebDriver driver=setDriver();
+    private List<String> getCategoryDataList(String categoryUrl, Integer categoryNum) {
+        WebDriver driver = setDriver();
 
         List<String> list = new ArrayList<>();
+        List<Item> itemList = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             driver.get(categoryUrl);
@@ -116,23 +116,28 @@ public class GiftService {
             ) {
                 actions.moveToElement(element);
                 actions.perform();
-                list.add(element.getAttribute("outerHTML"));
-                saveCategoryItem(element,categoryNum);
+                String html = element.getAttribute("outerHTML");
+                list.add(html);
+                Item item = getCategoryItem(element, categoryNum, html);
+                itemList.add(item);
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
-        }finally {
+        } finally {
+            itemRepository.saveAll(itemList);
             driver.quit();
         }
         return list;
     }
 
-    private void saveCategoryItem(WebElement element,Integer categoryNum){
-        String[] href=element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
-        int productId= Integer.parseInt(href[href.length - 1]);
-        Item item=new Item();
+    private Item getCategoryItem(WebElement element, Integer categoryNum, String html) {
+        String[] href = element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
+        int productId = Integer.parseInt(href[href.length - 1]);
+        Item item = new Item();
         item.setId((long) productId);
         item.setCategory(categoryNum);
-        itemRepository.save(item);
+        item.setHtml(html);
+        return item;
     }
 }
+
