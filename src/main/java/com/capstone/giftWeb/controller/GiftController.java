@@ -3,8 +3,11 @@ package com.capstone.giftWeb.controller;
 import com.capstone.giftWeb.Service.GiftService;
 import com.capstone.giftWeb.dto.GiftsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -47,6 +50,17 @@ public class GiftController {
         giftsDTO.setGifts(gifts);
 
         return giftsDTO;
+    }
+    @GetMapping("test/gifts/review")
+    public ModelAndView testMakeReivewGift(@RequestParam(value = "displayTag")String displayTag, @RequestParam(value = "priceRange")String priceRange){
+
+        List<String> gifts = giftService.makeReviewGifts(displayTag, priceRange);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("testReviewGifts");
+        modelAndView.addObject("gifts",gifts);
+
+        return modelAndView;
     }
 
 }

@@ -4,6 +4,7 @@ import com.capstone.giftWeb.domain.Item;
 import com.capstone.giftWeb.repository.ItemRepository;
 import org.asynchttpclient.uri.Uri;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -24,6 +25,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class GiftService {
