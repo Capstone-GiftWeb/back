@@ -2,6 +2,7 @@ package com.capstone.giftWeb.Service;
 
 import com.capstone.giftWeb.domain.Item;
 import com.capstone.giftWeb.repository.ItemRepository;
+import org.asynchttpclient.uri.Uri;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,7 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +67,13 @@ public class GiftService {
         List<String> list;
         int categoryNum = map.get(category);
         list = getCategoryDataList(url + "/" + categoryNum, categoryNum);
+
+        return list;
+    }
+
+    public List<String> makeReviewGifts(String displayTag,String priceRange){
+        List<String> list;
+        list = getReviewGifts(displayTag, priceRange);
 
         return list;
     }
@@ -138,6 +150,23 @@ public class GiftService {
         item.setCategory(categoryNum);
         item.setHtml(html);
         return item;
+    }
+
+    private List<String> getReviewGifts(String displayTag,String priceRange) {
+        WebDriver driver = setDriver();
+        List<String> list = new ArrayList<>();
+        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        String uri="https://gift.kakao.com/ranking/review";
+        driver.get(UriComponentsBuilder.fromUriString(uri).queryParam("displayTag",displayTag).queryParam("priceRange",priceRange).build().toUriString());
+        webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-tag-ranking-review")));
+        Actions actions = new Actions(driver);
+        List<WebElement> elements = driver.findElements(By.cssSelector("app-tag-ranking-review"));
+        for(int i=0;i<20;i++){
+            actions.moveToElement(elements.get(i));
+            actions.perform();
+            list.add(elements.get(i).getAttribute("outerHTML"));
+        }
+        return list;
     }
 }
 

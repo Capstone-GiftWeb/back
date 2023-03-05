@@ -108,6 +108,22 @@ public class GiftCrollingTest {
         itemRepository.saveAll(itemList);
     }
 
+    @Test
+    public void 받고만족한_크롤링(){
+        List<String> list = new ArrayList<>();
+        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        driver.get("https://gift.kakao.com/ranking/review?displayTag=%EC%9D%91%EC%9B%90&priceRange=R_3_5");
+        webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-tag-ranking-review")));
+        Actions actions = new Actions(driver);
+        List<WebElement> elements = driver.findElements(By.cssSelector("app-tag-ranking-review"));
+        for(int i=0;i<20;i++){
+            actions.moveToElement(elements.get(i));
+            actions.perform();
+            list.add(elements.get(i).getAttribute("outerHTML"));
+        }
+        assertThat(list.size()).isEqualTo(20);
+    }
+
     @AfterEach
     public void tearDown() {
         driver.quit();

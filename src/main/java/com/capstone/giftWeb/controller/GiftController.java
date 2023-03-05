@@ -39,4 +39,14 @@ public class GiftController {
         response.sendRedirect("https://gift.kakao.com/product/"+number);
     }
 
+    @GetMapping("gifts/review")
+    public GiftsDTO makeReivewGift(@RequestParam(value = "displayTag")String displayTag,@RequestParam(value = "priceRange")String priceRange){
+
+        List<String> gifts = giftService.makeReviewGifts(displayTag, priceRange);
+        GiftsDTO giftsDTO=new GiftsDTO();
+        giftsDTO.setGifts(gifts);
+
+        return giftsDTO;
+    }
+
 }
