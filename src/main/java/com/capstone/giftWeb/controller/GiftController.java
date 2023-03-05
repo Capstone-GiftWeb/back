@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
-@Controller
+@RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class GiftController {
 
@@ -16,7 +18,6 @@ public class GiftController {
     GiftService giftService;
 
     @GetMapping("/gifts/all")
-    @ResponseBody
     public GiftsDTO makeGifts(){
         List<String> gifts=giftService.makeAllGifts();
         GiftsDTO giftsDTO=new GiftsDTO();
@@ -25,7 +26,6 @@ public class GiftController {
     }
 
     @GetMapping("/gifts")
-    @ResponseBody
     public GiftsDTO makeCategoryGifts(@RequestParam("category")String category){
         List<String> gifts=giftService.makeCategoryGifts(category);
         GiftsDTO giftsDTO=new GiftsDTO();
@@ -34,9 +34,9 @@ public class GiftController {
     }
 
     @GetMapping("/product/{number}")
-    public String giftKakao(@PathVariable("number") String number){
+    public void giftKakao(@PathVariable("number") String number, HttpServletResponse response) throws IOException {
 
-        return "redirect:https://gift.kakao.com/product/"+number;
+        response.sendRedirect("https://gift.kakao.com/product/"+number);
     }
 
 }
