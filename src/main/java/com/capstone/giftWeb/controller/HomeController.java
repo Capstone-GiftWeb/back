@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class HomeController {
 
     @GetMapping("/")

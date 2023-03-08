@@ -25,7 +25,6 @@ import static com.capstone.giftWeb.enums.Gender.MALE;
 
 @RestController
 @RequestMapping("/members")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MemberController {
 
     @Autowired

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class GiftController {
 
     @Autowired
