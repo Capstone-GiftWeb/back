@@ -78,7 +78,7 @@ public class GiftService {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-popup-blocking");       //팝업안띄움
-        //options.addArguments("headless");                       //브라우저 안띄움
+        options.addArguments("headless");                       //브라우저 안띄움
         options.addArguments("--disable-gpu");            //gpu 비활성화
         options.addArguments("--blink-settings=imagesEnabled=false"); //이미지 다운 안받음
         options.addArguments("--remote-allow-origins=*");
@@ -92,22 +92,23 @@ public class GiftService {
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             driver.get(url);
-            webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
             Actions actions = new Actions(driver);
-            for (int i = 0; i < 120; i++) {
-                webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
-                WebElement element;
-                try{
-                    element=driver.findElement(By.cssSelector("ol > li:nth-child("+i+") > app-view-best-ranking-product"));
-                }catch (NoSuchElementException e){
-                    continue;
-                }
-                actions.moveToElement(element);
-                actions.perform();
-                list.add(element.getAttribute("outerHTML"));
-                if (list.size()>=100)
-                    break;
-            }
+            int i=-1;
+           while (true) {
+               i++;
+               webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
+               WebElement element;
+               try {
+                   element = driver.findElement(By.cssSelector("ol > li:nth-child(" + i + ") > app-view-best-ranking-product"));
+               } catch (NoSuchElementException e) {
+                   continue;
+               }
+               actions.moveToElement(element);
+               actions.perform();
+               list.add(element.getAttribute("outerHTML"));
+               if (list.size() >= 100)
+                   break;
+           }
 
         } catch (Exception e) {
             log.warn(e.getMessage());
