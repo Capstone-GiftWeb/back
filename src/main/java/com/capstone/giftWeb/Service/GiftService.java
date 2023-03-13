@@ -2,11 +2,7 @@ package com.capstone.giftWeb.Service;
 
 import com.capstone.giftWeb.domain.Item;
 import com.capstone.giftWeb.repository.ItemRepository;
-import org.asynchttpclient.uri.Uri;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
@@ -16,16 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class GiftService {
@@ -58,7 +50,7 @@ public class GiftService {
 
 
         List<String> list;
-        list = getDataList();
+        list = getAllDataList();
 
 
         return list;
@@ -73,7 +65,7 @@ public class GiftService {
         return list;
     }
 
-    public List<String> makeReviewGifts(String displayTag,String priceRange){
+    public List<String> makeReviewGifts(String displayTag, String priceRange) {
         List<String> list;
         list = getReviewGifts(displayTag, priceRange);
 
@@ -86,28 +78,37 @@ public class GiftService {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-popup-blocking");       //팝업안띄움
-        options.addArguments("headless");                       //브라우저 안띄움
+        //options.addArguments("headless");                       //브라우저 안띄움
         options.addArguments("--disable-gpu");            //gpu 비활성화
         options.addArguments("--blink-settings=imagesEnabled=false"); //이미지 다운 안받음
         options.addArguments("--remote-allow-origins=*");
         return new ChromeDriver(options);
     }
 
-    private List<String> getDataList() {
+    private List<String> getAllDataList() {
         WebDriver driver = setDriver();
         List<String> list = new ArrayList<>();
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             driver.get(url);
             webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
             Actions actions = new Actions(driver);
-            List<WebElement> elements = driver.findElements(By.cssSelector("app-view-best-ranking-product"));
-            for (WebElement element : elements
-            ) {
+            for (int i = 0; i < 120; i++) {
+                webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
+                WebElement element;
+                try{
+                    element=driver.findElement(By.cssSelector("ol > li:nth-child("+i+") > app-view-best-ranking-product"));
+                }catch (NoSuchElementException e){
+                    continue;
+                }
                 actions.moveToElement(element);
                 actions.perform();
                 list.add(element.getAttribute("outerHTML"));
+                if (list.size()>=100)
+                    break;
             }
+
         } catch (Exception e) {
             log.warn(e.getMessage());
         } finally {
@@ -155,16 +156,16 @@ public class GiftService {
         return item;
     }
 
-    private List<String> getReviewGifts(String displayTag,String priceRange) {
+    private List<String> getReviewGifts(String displayTag, String priceRange) {
         WebDriver driver = setDriver();
         List<String> list = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        String uri="https://gift.kakao.com/ranking/review";
-        driver.get(UriComponentsBuilder.fromUriString(uri).queryParam("displayTag",displayTag).queryParam("priceRange",priceRange).build().toUriString());
+        String uri = "https://gift.kakao.com/ranking/review";
+        driver.get(UriComponentsBuilder.fromUriString(uri).queryParam("displayTag", displayTag).queryParam("priceRange", priceRange).build().toUriString());
         webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-tag-ranking-review")));
         Actions actions = new Actions(driver);
         List<WebElement> elements = driver.findElements(By.cssSelector("app-tag-ranking-review"));
-        for(int i=0;i<20;i++){
+        for (int i = 0; i < 20; i++) {
             actions.moveToElement(elements.get(i));
             actions.perform();
             list.add(elements.get(i).getAttribute("outerHTML"));
