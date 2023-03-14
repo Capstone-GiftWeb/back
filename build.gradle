@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.0.1'
+	id 'org.springframework.boot' version '2.7.8'
 	id 'io.spring.dependency-management' version '1.1.0'
 	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
@@ -26,21 +26,36 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.1'
+<<<<<<< HEAD
 	testImplementation 'org.testng:testng:7.1.0'
+=======
+	testImplementation 'org.testng:testng:7.7.0'
+>>>>>>> 86bcc7d087673ded679be1f618eed170ced341a8
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+<<<<<<< HEAD
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	implementation "org.apache.mahout:mahout-hdfs:0.10.0"
 	implementation "org.apache.mahout:mahout-math:0.10.0"
 	implementation "org.apache.mahout:mahout-core:0.9"
+=======
+	implementation 'org.seleniumhq.selenium:selenium-java:4.8.0'
+
+
+	//swagger
+	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+>>>>>>> 86bcc7d087673ded679be1f618eed170ced341a8
 }
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
 }
 

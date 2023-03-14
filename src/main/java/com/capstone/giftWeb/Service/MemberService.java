@@ -1,4 +1,5 @@
 package com.capstone.giftWeb.Service;
+
 import com.capstone.giftWeb.auth.AuthInfo;
 import com.capstone.giftWeb.dto.LogInCommand;
 import com.capstone.giftWeb.exception.IdPasswordNotMatchingException;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional(readOnly = true)
 public class MemberService {
@@ -15,31 +18,36 @@ public class MemberService {
     private MemberRepository memberRepository;
 
     @Transactional
-    public Long createMember(Member member){
-        validateDuplicateMember(member);
-        memberRepository.save(member);
-        return member.getId();
-    }
-
-    private void validateDuplicateMember(Member member) {
-        memberRepository.findByEmail(member.getEmail())
-                .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 회원입니다.");
-                });
-    }
-
-    public AuthInfo loginAuth(LogInCommand logInCommand) throws Exception{
-        Member member = memberRepository.findByEmail(logInCommand.getEmail()).get() ;
-        if(member == null) {
-            throw new IdPasswordNotMatchingException();
+    public Member createMember(Member member) {
+        if(!validateDuplicateMember(member)){
+            return null;
         }
-        if(!member.matchPassword(logInCommand.getPassword())) {
+        memberRepository.save(member);
+        return member;
+    }
+
+    private boolean validateDuplicateMember(Member member) {
+        return memberRepository.findByEmail(member.getEmail())
+                .isEmpty();
+    }
+
+    public AuthInfo loginAuth(LogInCommand logInCommand) throws Exception {
+        Optional<Member> findMember = memberRepository.findByEmail(logInCommand.getEmail());
+        Member member;
+        if (findMember.isEmpty()) {
+            throw new IdPasswordNotMatchingException();
+        } else {
+            member = findMember.get();
+        }
+        if (!member.matchPassword(logInCommand.getPassword())) {
             throw new IdPasswordNotMatchingException();
         }
         return AuthInfo.builder()
                 .email(member.getEmail())
                 .name(member.getName())
-                .password(member.getPassword()).build();
+                .password(member.getPassword())
+                .gender(member.getGender())
+                .age(member.getAge()).build();
     }
 
 }
