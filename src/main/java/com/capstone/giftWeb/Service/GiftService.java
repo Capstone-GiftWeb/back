@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -78,13 +79,14 @@ public class GiftService {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-popup-blocking");       //팝업안띄움
-        options.addArguments("headless");                       //브라우저 안띄움
+        //options.addArguments("headless");                       //브라우저 안띄움
         options.addArguments("--disable-gpu");            //gpu 비활성화
         options.addArguments("--blink-settings=imagesEnabled=false"); //이미지 다운 안받음
         options.addArguments("--remote-allow-origins=*");
         return new ChromeDriver(options);
     }
 
+    @Scheduled(fixedDelay=1000*60) //우선 1분마다 한번씩 실행
     private List<String> getAllDataList() {
         WebDriver driver = setDriver();
         List<String> list = new ArrayList<>();
