@@ -1,6 +1,10 @@
 package com.capstone.giftWeb.Service;
 
+import com.capstone.giftWeb.domain.Item;
+import com.capstone.giftWeb.repository.ItemRepository;
+import org.asynchttpclient.uri.Uri;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -10,17 +14,25 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class GiftService {
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
+    @Autowired
+    ItemRepository itemRepository;
 
     //카테고리별 맵
     private static HashMap<String, Integer> map;
@@ -55,9 +67,15 @@ public class GiftService {
     public List<String> makeCategoryGifts(String category) {
 
         List<String> list;
-        list = getCategoryDataList(url + "/" + map.get(category));
+        int categoryNum = map.get(category);
+        list = getCategoryDataList(url + "/" + categoryNum, categoryNum);
 
+        return list;
+    }
 
+    public List<String> makeReviewGifts(String displayTag,String priceRange){
+        List<String> list;
+        list = getReviewGifts(displayTag, priceRange);
 
         return list;
     }
@@ -71,11 +89,12 @@ public class GiftService {
         options.addArguments("headless");                       //브라우저 안띄움
         options.addArguments("--disable-gpu");            //gpu 비활성화
         options.addArguments("--blink-settings=imagesEnabled=false"); //이미지 다운 안받음
+        options.addArguments("--remote-allow-origins=*");
         return new ChromeDriver(options);
     }
 
     private List<String> getDataList() {
-        WebDriver driver=setDriver();
+        WebDriver driver = setDriver();
         List<String> list = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
@@ -91,16 +110,17 @@ public class GiftService {
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
-        }finally {
+        } finally {
             driver.quit();
         }
         return list;
     }
 
-    private List<String> getCategoryDataList(String categoryUrl) {
-        WebDriver driver=setDriver();
+    private List<String> getCategoryDataList(String categoryUrl, Integer categoryNum) {
+        WebDriver driver = setDriver();
 
         List<String> list = new ArrayList<>();
+        List<Item> itemList = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             driver.get(categoryUrl);
@@ -111,13 +131,45 @@ public class GiftService {
             ) {
                 actions.moveToElement(element);
                 actions.perform();
-                list.add(element.getAttribute("outerHTML"));
+                String html = element.getAttribute("outerHTML");
+                list.add(html);
+                Item item = getCategoryItem(element, categoryNum, html);
+                itemList.add(item);
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
-        }finally {
+        } finally {
+            itemRepository.saveAll(itemList);
             driver.quit();
         }
         return list;
     }
+
+    private Item getCategoryItem(WebElement element, Integer categoryNum, String html) {
+        String[] href = element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
+        int productId = Integer.parseInt(href[href.length - 1]);
+        Item item = new Item();
+        item.setId((long) productId);
+        item.setCategory(categoryNum);
+        item.setHtml(html);
+        return item;
+    }
+
+    private List<String> getReviewGifts(String displayTag,String priceRange) {
+        WebDriver driver = setDriver();
+        List<String> list = new ArrayList<>();
+        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        String uri="https://gift.kakao.com/ranking/review";
+        driver.get(UriComponentsBuilder.fromUriString(uri).queryParam("displayTag",displayTag).queryParam("priceRange",priceRange).build().toUriString());
+        webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-tag-ranking-review")));
+        Actions actions = new Actions(driver);
+        List<WebElement> elements = driver.findElements(By.cssSelector("app-tag-ranking-review"));
+        for(int i=0;i<20;i++){
+            actions.moveToElement(elements.get(i));
+            actions.perform();
+            list.add(elements.get(i).getAttribute("outerHTML"));
+        }
+        return list;
+    }
 }
+

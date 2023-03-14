@@ -27,6 +27,7 @@ public class Member {
 
     private int age;
 
+
     public boolean matchPassword(String password){
         return this.password.equals(password);
     }
