@@ -1,9 +1,6 @@
 package com.capstone.giftWeb.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -16,9 +13,16 @@ public class Item {
     @Column(name = "item_id", nullable = false)
     private Long id;
 
+    private String title;
+
+    private String company;
+
+    private Integer price;
+
     private Integer category;
 
-    @Lob
-    private String html;
+    private String image;
+
+    private String href;
 
 }

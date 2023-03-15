@@ -22,7 +22,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.testng.Assert;
+import org.thymeleaf.util.ArrayUtils;
 
+import java.lang.reflect.Array;
 import java.net.SocketException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -102,10 +104,8 @@ public class GiftCrollingTest {
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             Actions actions = new Actions(driver);
-            List<String> hrefs = new ArrayList<>();
-
             driver.get("https://gift.kakao.com/ranking/best/delivery/2");
-            int i = -1;
+            int i = 0;
             while (true) {
                 i++;
                 webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
@@ -119,11 +119,21 @@ public class GiftCrollingTest {
                 actions.perform();
                 list.add(element.getAttribute("outerHTML"));
                 String[] href = element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
-                int productId = Integer.parseInt(href[href.length - 1]);
+                Integer productId = Integer.parseInt(href[href.length - 1]);
+                String title=element.findElement(By.className("txt_prdname")).getText();
+                String company=element.findElement(By.className("txt_brand")).getText();
+                Integer price = Integer.parseInt(element.findElement(By.className("num_price")).getText().replaceAll(",", "").replace("원",""));
+                String image=element.findElement(By.className("img_thumb")).getAttribute("src");
+                String item_href=element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href");
                 Item item = new Item();
-                item.setId((long) productId);
+                item.setId(Long.valueOf(productId));
+                item.setTitle(title);
+                item.setCompany(company);
+                item.setPrice(price);
                 item.setCategory(2);
-                item.setHtml(element.getAttribute("outerHTML"));
+                item.setImage(image);
+                item.setHref(String.join("/",Arrays.copyOfRange(href,href.length-2,href.length)));
+
                 itemList.add(item);
                 if(list.size()>=100)
                     break;
