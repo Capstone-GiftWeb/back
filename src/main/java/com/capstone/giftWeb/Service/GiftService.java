@@ -2,11 +2,7 @@ package com.capstone.giftWeb.Service;
 
 import com.capstone.giftWeb.domain.Item;
 import com.capstone.giftWeb.repository.ItemRepository;
-import org.asynchttpclient.uri.Uri;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
@@ -15,17 +11,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class GiftService {
@@ -54,87 +48,97 @@ public class GiftService {
 
     private static final String url = "https://gift.kakao.com/ranking/best/delivery"; //카카오톡 선물하기 '많이 선물한' 랭킹
 
-    public List<String> makeAllGifts() {
-
-
-        List<String> list;
-        list = getDataList();
-
-
-        return list;
-    }
-
-    public List<String> makeCategoryGifts(String category) {
-
-        List<String> list;
-        int categoryNum = map.get(category);
-        list = getCategoryDataList(url + "/" + categoryNum, categoryNum);
-
-        return list;
-    }
-
-    public List<String> makeReviewGifts(String displayTag,String priceRange){
-        List<String> list;
-        list = getReviewGifts(displayTag, priceRange);
-
-        return list;
-    }
-
     private ChromeDriver setDriver() {
 
         System.setProperty("webdriver.chrome.driver", "./chromedriver/chromedriver.exe");
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-popup-blocking");       //팝업안띄움
-        options.addArguments("headless");                       //브라우저 안띄움
+        //options.addArguments("headless");                       //브라우저 안띄움
         options.addArguments("--disable-gpu");            //gpu 비활성화
         options.addArguments("--blink-settings=imagesEnabled=false"); //이미지 다운 안받음
         options.addArguments("--remote-allow-origins=*");
         return new ChromeDriver(options);
     }
 
-    private List<String> getDataList() {
-        WebDriver driver = setDriver();
-        List<String> list = new ArrayList<>();
-        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        try {
-            driver.get(url);
-            webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
-            Actions actions = new Actions(driver);
-            List<WebElement> elements = driver.findElements(By.cssSelector("app-view-best-ranking-product"));
-            for (WebElement element : elements
-            ) {
-                actions.moveToElement(element);
-                actions.perform();
-                list.add(element.getAttribute("outerHTML"));
-            }
-        } catch (Exception e) {
-            log.warn(e.getMessage());
-        } finally {
-            driver.quit();
+    //@Scheduled(fixedDelay=1000*60) //우선 1분마다 한번씩 실행
+    private void getDataSchedule(){
+        for(int i=1;i<11;i++){
+            getCategoryDataList(url+"/"+i,i);
         }
-        return list;
     }
 
-    private List<String> getCategoryDataList(String categoryUrl, Integer categoryNum) {
+//    private List<String> getAllDataList() {
+//        WebDriver driver = setDriver();
+//        List<String> list = new ArrayList<>();
+//        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+//        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+//        try {
+//            driver.get(url);
+//            Actions actions = new Actions(driver);
+//            int i=0;
+//           while (true) {
+//               i++;
+//               webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
+//               WebElement element;
+//               try {
+//                   element = driver.findElement(By.cssSelector("ol > li:nth-child(" + i + ") > app-view-best-ranking-product"));
+//               } catch (NoSuchElementException e) {
+//                   continue;
+//               }
+//               actions.moveToElement(element);
+//               actions.perform();
+//               list.add(element.getAttribute("outerHTML"));
+//               if (list.size() >= 100)
+//                   break;
+//           }
+//
+//        } catch (Exception e) {
+//            log.warn(e.getMessage());
+//        } finally {
+//            driver.quit();
+//        }
+//        return list;
+//    }
+
+    private void getCategoryDataList(String categoryUrl, Integer categoryNum) {
         WebDriver driver = setDriver();
 
-        List<String> list = new ArrayList<>();
         List<Item> itemList = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             driver.get(categoryUrl);
-            webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
             Actions actions = new Actions(driver);
-            List<WebElement> elements = driver.findElements(By.cssSelector("app-view-best-ranking-product"));
-            for (WebElement element : elements
-            ) {
+            int i=0;
+            while (true) {
+                i++;
+                webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
+                WebElement element;
+                try {
+                    element = driver.findElement(By.cssSelector("ol > li:nth-child(" + i + ") > app-view-best-ranking-product"));
+                } catch (NoSuchElementException e) {
+                    continue;
+                }
                 actions.moveToElement(element);
                 actions.perform();
-                String html = element.getAttribute("outerHTML");
-                list.add(html);
-                Item item = getCategoryItem(element, categoryNum, html);
+                String[] href = element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
+                Integer productId = Integer.parseInt(href[href.length - 1]);
+                String title=element.findElement(By.className("txt_prdname")).getText();
+                String company=element.findElement(By.className("txt_brand")).getText();
+                Integer price = Integer.parseInt(element.findElement(By.className("num_price")).getText().replaceAll(",", "").replace("원",""));
+                String image=element.findElement(By.className("img_thumb")).getAttribute("src");
+                Item item = new Item();
+                item.setId(Long.valueOf(productId));
+                item.setTitle(title);
+                item.setCompany(company);
+                item.setPrice(price);
+                item.setCategory(categoryNum);
+                item.setImage(image);
+                item.setHref(String.join("/", Arrays.copyOfRange(href,href.length-2,href.length)));
+
                 itemList.add(item);
+                if(itemList.size()>=100)
+                    break;
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
@@ -142,29 +146,28 @@ public class GiftService {
             itemRepository.saveAll(itemList);
             driver.quit();
         }
-        return list;
     }
 
-    private Item getCategoryItem(WebElement element, Integer categoryNum, String html) {
+    private Item getCategoryItem(WebElement element, Integer categoryNum) {
         String[] href = element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
+        String title=element.findElement(By.cssSelector("txt_prdname")).getText();
         int productId = Integer.parseInt(href[href.length - 1]);
         Item item = new Item();
         item.setId((long) productId);
         item.setCategory(categoryNum);
-        item.setHtml(html);
         return item;
     }
 
-    private List<String> getReviewGifts(String displayTag,String priceRange) {
+    private List<String> getReviewGifts(String displayTag, String priceRange) {
         WebDriver driver = setDriver();
         List<String> list = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        String uri="https://gift.kakao.com/ranking/review";
-        driver.get(UriComponentsBuilder.fromUriString(uri).queryParam("displayTag",displayTag).queryParam("priceRange",priceRange).build().toUriString());
+        String uri = "https://gift.kakao.com/ranking/review";
+        driver.get(UriComponentsBuilder.fromUriString(uri).queryParam("displayTag", displayTag).queryParam("priceRange", priceRange).build().toUriString());
         webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-tag-ranking-review")));
         Actions actions = new Actions(driver);
         List<WebElement> elements = driver.findElements(By.cssSelector("app-tag-ranking-review"));
-        for(int i=0;i<20;i++){
+        for (int i = 0; i < 20; i++) {
             actions.moveToElement(elements.get(i));
             actions.perform();
             list.add(elements.get(i).getAttribute("outerHTML"));
