@@ -124,7 +124,6 @@ public class GiftCrollingTest {
                 String company=element.findElement(By.className("txt_brand")).getText();
                 Integer price = Integer.parseInt(element.findElement(By.className("num_price")).getText().replaceAll(",", "").replace("원",""));
                 String image=element.findElement(By.className("img_thumb")).getAttribute("src");
-                String item_href=element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href");
                 Item item = new Item();
                 item.setId(Long.valueOf(productId));
                 item.setTitle(title);

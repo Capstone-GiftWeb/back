@@ -61,7 +61,7 @@ public class GiftService {
         return new ChromeDriver(options);
     }
 
-    //@Scheduled(fixedDelay=1000*60) //우선 1분마다 한번씩 실행
+    @Scheduled(fixedDelay=1000*60) //우선 1분마다 한번씩 실행
     private void getDataSchedule(){
         for(int i=1;i<11;i++){
             getCategoryDataList(url+"/"+i,i);
