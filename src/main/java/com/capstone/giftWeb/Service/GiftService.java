@@ -45,6 +45,9 @@ public class GiftService {
             put("꽃배달/도서", 10);
         }};
     }
+    public List<Item> testGetGifts(){
+        return itemRepository.findTop100ByOrderByIdDesc();
+    }
 
     private static final String url = "https://gift.kakao.com/ranking/best/delivery"; //카카오톡 선물하기 '많이 선물한' 랭킹
 
@@ -54,14 +57,14 @@ public class GiftService {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-popup-blocking");       //팝업안띄움
-        //options.addArguments("headless");                       //브라우저 안띄움
+        options.addArguments("headless");                       //브라우저 안띄움
         options.addArguments("--disable-gpu");            //gpu 비활성화
         options.addArguments("--blink-settings=imagesEnabled=false"); //이미지 다운 안받음
         options.addArguments("--remote-allow-origins=*");
         return new ChromeDriver(options);
     }
 
-    //@Scheduled(fixedDelay=1000*60) //우선 1분마다 한번씩 실행
+    @Scheduled(fixedDelay=1000*60) //우선 1분마다 한번씩 실행
     private void getDataSchedule(){
         for(int i=1;i<11;i++){
             getCategoryDataList(url+"/"+i,i);

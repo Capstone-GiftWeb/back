@@ -1,5 +1,6 @@
 package com.capstone.giftWeb.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 public class Item {
     @Id
     @Column(name = "item_id", nullable = false)
+    @JsonIgnore
     private Long id;
 
     private String title;

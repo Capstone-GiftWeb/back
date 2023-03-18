@@ -1,6 +1,7 @@
 package com.capstone.giftWeb.controller;
 
 import com.capstone.giftWeb.Service.GiftService;
+import com.capstone.giftWeb.domain.Item;
 import com.capstone.giftWeb.dto.GiftsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,17 @@ public class GiftController {
 
 
     @GetMapping("/product/{number}")
-    public void giftKakao(@PathVariable("number") String number, HttpServletResponse response) throws IOException {
+    public void moveKakao(@PathVariable("number") String number, HttpServletResponse response) throws IOException {
 
         response.sendRedirect("https://gift.kakao.com/product/"+number);
+    }
+
+    @GetMapping("/gifts")
+    public GiftsDTO makeGifts(){
+        List<Item> itemList=giftService.testGetGifts();
+        GiftsDTO giftsDTO=new GiftsDTO();
+        giftsDTO.setGifts(itemList);
+        return giftsDTO;
     }
 
 }
