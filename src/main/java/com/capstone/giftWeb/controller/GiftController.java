@@ -1,16 +1,13 @@
 package com.capstone.giftWeb.controller;
 
 import com.capstone.giftWeb.Service.GiftService;
-import com.capstone.giftWeb.domain.Item;
+import com.capstone.giftWeb.domain.Gift;
 import com.capstone.giftWeb.dto.GiftsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.util.List;
 
@@ -29,9 +26,17 @@ public class GiftController {
 
     @GetMapping("/gifts")
     public GiftsDTO makeGifts(){
-        List<Item> itemList=giftService.testGetGifts();
+        List<Gift> giftList =giftService.testGetGifts();
         GiftsDTO giftsDTO=new GiftsDTO();
-        giftsDTO.setGifts(itemList);
+        giftsDTO.setGifts(giftList);
+        return giftsDTO;
+    }
+
+    @GetMapping("/gifts/search")
+    public GiftsDTO searchGifts(@RequestParam(value="search")String search){
+        List<Gift> giftList =giftService.searchGifts(search);
+        GiftsDTO giftsDTO=new GiftsDTO();
+        giftsDTO.setGifts(giftList);
         return giftsDTO;
     }
 

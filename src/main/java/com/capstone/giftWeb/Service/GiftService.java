@@ -1,7 +1,7 @@
 package com.capstone.giftWeb.Service;
 
-import com.capstone.giftWeb.domain.Item;
-import com.capstone.giftWeb.repository.ItemRepository;
+import com.capstone.giftWeb.domain.Gift;
+import com.capstone.giftWeb.repository.GiftRepository;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -26,7 +26,7 @@ public class GiftService {
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     @Autowired
-    ItemRepository itemRepository;
+    GiftRepository giftRepository;
 
     //카테고리별 맵
     private static HashMap<String, Integer> map;
@@ -45,8 +45,12 @@ public class GiftService {
             put("꽃배달/도서", 10);
         }};
     }
-    public List<Item> testGetGifts(){
-        return itemRepository.findTop100ByOrderByIdDesc();
+    public List<Gift> testGetGifts(){
+        return giftRepository.findTop100ByOrderByIdDesc();
+    }
+
+    public List<Gift> searchGifts(String search){
+        return giftRepository.findAllByTitleContains(search);
     }
 
     private static final String url = "https://gift.kakao.com/ranking/best/delivery"; //카카오톡 선물하기 '많이 선물한' 랭킹
@@ -107,7 +111,7 @@ public class GiftService {
     private void getCategoryDataList(String categoryUrl, Integer categoryNum) {
         WebDriver driver = setDriver();
 
-        List<Item> itemList = new ArrayList<>();
+        List<Gift> giftList = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             driver.get(categoryUrl);
@@ -130,35 +134,35 @@ public class GiftService {
                 String company=element.findElement(By.className("txt_brand")).getText();
                 Integer price = Integer.parseInt(element.findElement(By.className("num_price")).getText().replaceAll(",", "").replace("원",""));
                 String image=element.findElement(By.className("img_thumb")).getAttribute("src");
-                Item item = new Item();
-                item.setId(Long.valueOf(productId));
-                item.setTitle(title);
-                item.setCompany(company);
-                item.setPrice(price);
-                item.setCategory(categoryNum);
-                item.setImage(image);
-                item.setHref(String.join("/", Arrays.copyOfRange(href,href.length-2,href.length)));
+                Gift gift = new Gift();
+                gift.setId(Long.valueOf(productId));
+                gift.setTitle(title);
+                gift.setCompany(company);
+                gift.setPrice(price);
+                gift.setCategory(categoryNum);
+                gift.setImage(image);
+                gift.setHref(String.join("/", Arrays.copyOfRange(href,href.length-2,href.length)));
 
-                itemList.add(item);
-                if(itemList.size()>=100)
+                giftList.add(gift);
+                if(giftList.size()>=100)
                     break;
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
         } finally {
-            itemRepository.saveAll(itemList);
+            giftRepository.saveAll(giftList);
             driver.quit();
         }
     }
 
-    private Item getCategoryItem(WebElement element, Integer categoryNum) {
+    private Gift getCategoryItem(WebElement element, Integer categoryNum) {
         String[] href = element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
         String title=element.findElement(By.cssSelector("txt_prdname")).getText();
         int productId = Integer.parseInt(href[href.length - 1]);
-        Item item = new Item();
-        item.setId((long) productId);
-        item.setCategory(categoryNum);
-        return item;
+        Gift gift = new Gift();
+        gift.setId((long) productId);
+        gift.setCategory(categoryNum);
+        return gift;
     }
 
     private List<String> getReviewGifts(String displayTag, String priceRange) {
