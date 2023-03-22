@@ -1,11 +1,14 @@
 package com.capstone.giftWeb.domain;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @NoArgsConstructor
-public class Preference {
+public class Preference implements Serializable {
 
     @Id
     @Column(name = "member_id")
@@ -15,21 +18,26 @@ public class Preference {
     @Column(name = "category_id")
     private Long categoryId;
 
-    @Column(name = "pref_score")
-    private Long prefScore;
+    @Column(name = "prev_score")
+    private Long prevScore;
 
-    @Column(name = "likes")
-    private Long likes;
+    @Column(name = "like")
+    @ColumnDefault("false")
+    private Boolean like;
 
     @Column(name = "clicks")
     private Long clicks;
 
+    @Column(name = "pref_score")
+    private Long prefScore;
+
     @Builder
-    public Preference(Long userId, Long categoryId, Long prefScore, Long likes, Long clicks) {
+    public Preference(Long userId, Long categoryId, Long prevScore, Boolean like, Long clicks, Long prefScore) {
         this.userId = userId;
         this.categoryId = categoryId;
-        this.prefScore = prefScore;
-        this.likes = likes;
+        this.prevScore = prevScore;
+        this.like = like;
         this.clicks = clicks;
+        this.prefScore = prefScore;
     }
 }

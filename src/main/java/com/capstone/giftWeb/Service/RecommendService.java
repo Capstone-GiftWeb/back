@@ -71,7 +71,7 @@ public class RecommendService {
         }
 
         try {
-            String sql = "select * from ";
+            String sql = "select * from capstone.preference";
 
             pstmt = conn.prepareStatement(sql);
 
