@@ -3,15 +3,19 @@ package com.capstone.giftWeb.controller;
 import com.capstone.giftWeb.Service.GiftService;
 import com.capstone.giftWeb.domain.Gift;
 import com.capstone.giftWeb.dto.GiftsDto;
+import com.capstone.giftWeb.dto.WordsDto;
 import com.capstone.giftWeb.enums.Field;
 import com.capstone.giftWeb.enums.GiftOrderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class GiftController {
@@ -33,6 +37,24 @@ public class GiftController {
         giftsDTO.setGifts(giftList);
         return giftsDTO;
     }
+
+//    @GetMapping("/gifts/wordSearchShow.action")
+//    public WordsDto wordSearchShow(HttpServletRequest request){
+//        String searchType = request.getParameter("searchType");
+//        String searchWord = request.getParameter("searchWord");
+//
+//        Map<String, String> paraMap = new HashMap<>();
+//        paraMap.put("searchType", searchType);
+//        paraMap.put("searchWord", searchWord);
+//
+//        List<String> wordList;
+//        wordList=giftService.wordSearchShow(paraMap);
+//        WordsDto wordsDto=new WordsDto();
+//        if(wordList!=null){
+//            wordsDto.setWords(wordList);
+//        }
+//        return wordsDto;
+//    }
 
     @GetMapping("/gifts/search")
     public GiftsDto searchGifts(@RequestParam(value="search")String search, @RequestParam(value="field",required = false)Field field,@RequestParam(value="order",required = false) GiftOrderType order){
