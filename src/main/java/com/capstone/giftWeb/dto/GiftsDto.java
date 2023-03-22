@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.List;
 
 @Getter @Setter
-public class GiftsDTO {
+public class GiftsDto {
 
     private List<Gift> gifts;
 }
