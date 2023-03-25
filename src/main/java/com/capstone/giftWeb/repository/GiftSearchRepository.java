@@ -16,12 +16,11 @@ public class GiftSearchRepository {
         this.jpaQueryFactory=jpaQueryFactory;
     }
     public List<String> wordSearchShow(String searchWord) {
-        List<String> result = jpaQueryFactory.select(gift.title)
+        return jpaQueryFactory.select(gift.title)
                 .from(gift)
                 .where(gift.title.likeIgnoreCase("%" + searchWord + "%"))
                 .distinct()
                 .limit(5)
                 .fetch();
-        return result;
     }
 }
