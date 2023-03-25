@@ -9,9 +9,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Item {
+public class Gift {
     @Id
-    @Column(name = "item_id", nullable = false)
+    @Column(name = "gift_id", nullable = false)
     @JsonIgnore
     private Long id;
 

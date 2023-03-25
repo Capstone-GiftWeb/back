@@ -1,8 +1,7 @@
 package com.capstone.giftWeb.gifts;
 
-import com.capstone.giftWeb.domain.Item;
-import com.capstone.giftWeb.repository.ItemRepository;
-import org.aspectj.lang.annotation.Before;
+import com.capstone.giftWeb.domain.Gift;
+import com.capstone.giftWeb.repository.GiftRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,16 +15,10 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 import org.testng.Assert;
-import org.thymeleaf.util.ArrayUtils;
 
-import java.lang.reflect.Array;
-import java.net.SocketException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +33,7 @@ public class GiftCrollingTest {
     private WebDriver driver;
 
     @Autowired
-    private ItemRepository itemRepository;
+    private GiftRepository giftRepository;
     private static final String url = "https://gift.kakao.com/ranking/best/delivery"; //카카오톡 선물하기 '많이 선물한' 랭킹
 
 
@@ -100,7 +93,7 @@ public class GiftCrollingTest {
     @Test
     public void 카테고리크롤링() {
         List<String> list = new ArrayList<>();
-        List<Item> itemList = new ArrayList<>();
+        List<Gift> giftList = new ArrayList<>();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             Actions actions = new Actions(driver);
@@ -124,26 +117,26 @@ public class GiftCrollingTest {
                 String company=element.findElement(By.className("txt_brand")).getText();
                 Integer price = Integer.parseInt(element.findElement(By.className("num_price")).getText().replaceAll(",", "").replace("원",""));
                 String image=element.findElement(By.className("img_thumb")).getAttribute("src");
-                Item item = new Item();
-                item.setId(Long.valueOf(productId));
-                item.setTitle(title);
-                item.setCompany(company);
-                item.setPrice(price);
-                item.setCategory(2);
-                item.setImage(image);
-                item.setHref(String.join("/",Arrays.copyOfRange(href,href.length-2,href.length)));
+                Gift gift = new Gift();
+                gift.setId(Long.valueOf(productId));
+                gift.setTitle(title);
+                gift.setCompany(company);
+                gift.setPrice(price);
+                gift.setCategory(2);
+                gift.setImage(image);
+                gift.setHref(String.join("/",Arrays.copyOfRange(href,href.length-2,href.length)));
 
-                itemList.add(item);
+                giftList.add(gift);
                 if(list.size()>=100)
                     break;
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-            itemRepository.saveAll(itemList);
+            giftRepository.saveAll(giftList);
 
 
-            Assert.assertEquals(itemList.size(), 100);
+            Assert.assertEquals(giftList.size(), 100);
         for (String s : list) {
             if (s.contains("mud")) {
                 Assertions.fail("이미지 갖고오기 실패");
