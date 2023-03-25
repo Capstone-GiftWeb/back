@@ -2,6 +2,7 @@ package com.capstone.giftWeb.Service;
 
 import com.capstone.giftWeb.domain.Gift;
 import com.capstone.giftWeb.repository.GiftRepository;
+import com.capstone.giftWeb.repository.GiftSearchRepository;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -28,6 +29,9 @@ public class GiftService {
     @Autowired
     GiftRepository giftRepository;
 
+    @Autowired
+    GiftSearchRepository giftSearchRepository;
+
     //카테고리별 맵
     private static HashMap<String, Integer> map;
 
@@ -45,12 +49,17 @@ public class GiftService {
             put("꽃배달/도서", 10);
         }};
     }
-    public List<Gift> testGetGifts(){
+
+    public List<Gift> testGetGifts() {
         return giftRepository.findTop100ByOrderByIdDesc();
     }
 
-    public List<Gift> searchGifts(String search){
+    public List<Gift> searchGifts(String search) {
         return giftRepository.findAllByTitleContains(search);
+    }
+
+    public List<String> wordSearchShow(String searchWord) {
+        return giftSearchRepository.wordSearchShow(searchWord);
     }
 
     private static final String url = "https://gift.kakao.com/ranking/best/delivery"; //카카오톡 선물하기 '많이 선물한' 랭킹
@@ -68,10 +77,10 @@ public class GiftService {
         return new ChromeDriver(options);
     }
 
-    @Scheduled(fixedDelay=1000*60) //우선 1분마다 한번씩 실행
-    private void getDataSchedule(){
-        for(int i=1;i<11;i++){
-            getCategoryDataList(url+"/"+i,i);
+    @Scheduled(fixedDelay = 1000 * 60) //우선 1분마다 한번씩 실행
+    private void getDataSchedule() {
+        for (int i = 1; i < 11; i++) {
+            getCategoryDataList(url + "/" + i, i);
         }
     }
 
@@ -116,7 +125,7 @@ public class GiftService {
         try {
             driver.get(categoryUrl);
             Actions actions = new Actions(driver);
-            int i=0;
+            int i = 0;
             while (true) {
                 i++;
                 webDriverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("app-view-best-ranking-product")));
@@ -130,10 +139,10 @@ public class GiftService {
                 actions.perform();
                 String[] href = element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
                 Integer productId = Integer.parseInt(href[href.length - 1]);
-                String title=element.findElement(By.className("txt_prdname")).getText();
-                String company=element.findElement(By.className("txt_brand")).getText();
-                Integer price = Integer.parseInt(element.findElement(By.className("num_price")).getText().replaceAll(",", "").replace("원",""));
-                String image=element.findElement(By.className("img_thumb")).getAttribute("src");
+                String title = element.findElement(By.className("txt_prdname")).getText();
+                String company = element.findElement(By.className("txt_brand")).getText();
+                Integer price = Integer.parseInt(element.findElement(By.className("num_price")).getText().replaceAll(",", "").replace("원", ""));
+                String image = element.findElement(By.className("img_thumb")).getAttribute("src");
                 Gift gift = new Gift();
                 gift.setId(Long.valueOf(productId));
                 gift.setTitle(title);
@@ -141,10 +150,10 @@ public class GiftService {
                 gift.setPrice(price);
                 gift.setCategory(categoryNum);
                 gift.setImage(image);
-                gift.setHref(String.join("/", Arrays.copyOfRange(href,href.length-2,href.length)));
+                gift.setHref(String.join("/", Arrays.copyOfRange(href, href.length - 2, href.length)));
 
                 giftList.add(gift);
-                if(giftList.size()>=100)
+                if (giftList.size() >= 100)
                     break;
             }
         } catch (Exception e) {
@@ -157,7 +166,7 @@ public class GiftService {
 
     private Gift getCategoryItem(WebElement element, Integer categoryNum) {
         String[] href = element.findElement(By.cssSelector("div > div.thumb_prd > gc-link > a")).getAttribute("href").split("/");
-        String title=element.findElement(By.cssSelector("txt_prdname")).getText();
+        String title = element.findElement(By.cssSelector("txt_prdname")).getText();
         int productId = Integer.parseInt(href[href.length - 1]);
         Gift gift = new Gift();
         gift.setId((long) productId);
