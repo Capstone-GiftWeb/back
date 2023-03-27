@@ -1,6 +1,6 @@
 {
-  "steps": [{
-    "stepIdentifier": {
+  "survey": [{
+    "surveyIdentifier": {
       "id": "1"
     },
     "type": "intro",
@@ -9,143 +9,24 @@
     "buttonText": "추천받으러 go!"
   },
     {
-      "stepIdentifier": {
+      "surveyIdentifier": {
         "id": "2"
       },
       "type": "question",
-      "title": "당신의 나이는?",
+      "title": "이 중에서 관심있는 카테고리를 골라주세요.",
       "answerFormat": {
-        "type": "single",
-        "hint": "당신의 나이를 입력해주세요.",
+        "type": "multiple",
         "choice_list":[
-          "0~10",
-          "11~20",
-          "21~30",
-          "31~40",
-          "41~50",
-          "51~60",
-          "그 이상"
-        ]
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "3"
-      },
-      "type": "question",
-      "title": "당신의 성별은?",
-      "answerFormat": {
-        "choice_list":[
-          "남자",
-          "여자"
-        ],
-        "type": "single"
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "4"
-      },
-      "type": "question",
-      "title": "선물받을 사람과의 관계는?",
-      "answerFormat": {
-        "type": "single",
-        "choice_list": [
-          "아버지",
-          "어머니",
-          "친척",
-          "연인",
-          "친구",
-          "형제(혹은 자매)"
-        ]
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "5"
-      },
-      "type": "question",
-      "title": "받는 사람의 성별은?",
-      "answerFormat": {
-        "type": "single",
-        "choice_list": [
-          "남자",
-          "여자"
-        ]
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "6"
-      },
-      "type": "question",
-      "title": "받는 사람의 나이는?",
-      "answerFormat": {
-        "type": "single",
-        "hint": "받는 사람의 나이를 입력해주세요.",
-        "choice_list":[
-          "0~10",
-          "11~20",
-          "21~30",
-          "31~40",
-          "41~50",
-          "51~60",
-          "그 이상"
-        ]
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "7"
-      },
-      "type": "question",
-      "title": "어떤 기념일을 위한 선물인가요?",
-      "answerFormat": {
-        "type": "single",
-        "choice_list": [
-          "생일",
-          "발렌타인 데이",
-          "집들이",
-          "기타"
-        ]
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "8"
-      },
-      "type": "question",
-      "title": "원하는 선물의 카테고리를 골라주세요.",
-      "answerFormat": {
-        "type": "single",
-        "choice_list": [
-          "식품",
-          "화장품/향수",
           "패션",
+          "화장품/향수",
+          "출산/유아동",
+          "식품",
           "리빙",
-          "건강",
-          "카카오프렌즈",
-          "명품 패션",
-          "가전/디지털",
-          "꽃배달/도서",
           "레저/스포츠",
-          "출산/유아동"
-        ]
-      }
-    },
-    {
-      "stepIdentifier": {
-        "id": "9"
-      },
-      "type": "question",
-      "title": "원하는 가격대를 골라주세요.",
-      "answerFormat": {
-        "type": "single",
-        "choice_list": [
-          "1만원 미만",
-          "1-2만원대",
-          "3-4만원대",
-          "5만원 이상"
+          "가전/디지털",
+          "건강",
+          "명품 패션",
+          "꽃배달/도서"
         ]
       }
     }

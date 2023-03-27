@@ -1,4 +1,4 @@
-package com.capstone.giftWeb.mvc;
+package com.capstone.giftWeb.controller;
 
 import com.capstone.giftWeb.Service.MemberService;
 import com.capstone.giftWeb.controller.MemberController;
