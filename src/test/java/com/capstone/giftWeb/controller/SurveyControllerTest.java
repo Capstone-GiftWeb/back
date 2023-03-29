@@ -1,10 +1,6 @@
 package com.capstone.giftWeb.controller;
 
-import com.capstone.giftWeb.Service.MemberService;
 import com.capstone.giftWeb.Service.SurveyService;
-import com.capstone.giftWeb.controller.MemberController;
-import com.capstone.giftWeb.controller.SurveyController;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
@@ -16,9 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
