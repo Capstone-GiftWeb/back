@@ -52,7 +52,7 @@ public class TokenProvider {
     // 토큰 생성
     public TokenDto generateTokenDto(Authentication authentication) {
         String accessToken=createAccessToken(authentication);
-        String refreshToken=createRefreshToken(authentication);
+        String refreshToken=issueRefreshToken(authentication);
 
         return TokenDto.builder()
                 .grantType(BEARER_TYPE)
@@ -98,6 +98,18 @@ public class TokenProvider {
                 .getBody();
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
+
+        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
+    }
+
+    public Authentication getAuthenticationForReIssue(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        UserDetails userDetails = customUserDetailsService.loadUserByUserId(claims.getSubject());
 
         return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }

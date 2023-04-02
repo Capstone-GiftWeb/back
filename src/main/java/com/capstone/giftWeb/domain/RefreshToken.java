@@ -2,11 +2,13 @@ package com.capstone.giftWeb.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor
 public class RefreshToken {
@@ -20,9 +22,9 @@ public class RefreshToken {
     @NotBlank
     private String userId;
 
-    public RefreshToken(String member_id,String token) {
+    public RefreshToken(String userId,String token) {
         this.token = token;
-        this.userId = member_id;
+        this.userId = userId;
     }
 
     public static RefreshToken createToken(String userId, String token){

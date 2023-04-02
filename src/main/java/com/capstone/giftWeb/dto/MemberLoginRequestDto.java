@@ -2,6 +2,7 @@ package com.capstone.giftWeb.dto;
 
 import com.capstone.giftWeb.domain.Member;
 import com.capstone.giftWeb.enums.Authority;
+import com.capstone.giftWeb.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
