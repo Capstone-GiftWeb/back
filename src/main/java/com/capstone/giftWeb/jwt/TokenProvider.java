@@ -1,6 +1,8 @@
 package com.capstone.giftWeb.jwt;
 
+import com.capstone.giftWeb.domain.RefreshToken;
 import com.capstone.giftWeb.dto.TokenDto;
+import com.capstone.giftWeb.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -14,8 +16,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,16 +29,20 @@ public class TokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; //30분
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60*60*24 * 14; //2주
     private final Key key;
 
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
 
 
     // 주의점: 여기서 @Value는 `springframework.beans.factory.annotation.Value`소속이다! lombok의 @Value와 착각하지 말것!
     //     * @param secretKey
-    public TokenProvider(@Value("${jwt.secret}") String secretKey) {
+    public TokenProvider(@Value("${jwt.secret}") String secretKey, RefreshTokenRepository refreshTokenRepository) {
+        this.refreshTokenRepository = refreshTokenRepository;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
@@ -44,28 +50,43 @@ public class TokenProvider {
 
     // 토큰 생성
     public TokenDto generateTokenDto(Authentication authentication) {
+        String accessToken=createAccessToken(authentication);
+        String refreshToken=createRefreshToken(authentication);
 
+        return TokenDto.builder()
+                .grantType(BEARER_TYPE)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    public String createAccessToken(Authentication authentication){
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        long now = (new Date()).getTime();
-        Date tokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+        Date now = new Date();
+        Date tokenExpiresIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
 
-        System.out.println(tokenExpiresIn);
-
-        String accessToken = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(tokenExpiresIn)
                 .signWith(key)
                 .compact();
+    }
 
 
-        return TokenDto.builder()
-                .grantType(BEARER_TYPE)
-                .accessToken(accessToken)
-                .build();
+    public String createRefreshToken(Authentication authentication){
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .setIssuedAt(now)
+                .signWith(key)
+                .setExpiration(validity)
+                .compact();
     }
 
     public Authentication getAuthentication(String accessToken) {
@@ -99,6 +120,25 @@ public class TokenProvider {
             log.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+    @Transactional
+    public String issueRefreshToken(Authentication authentication){
+        String newRefreshToken = createRefreshToken(authentication);
+
+        // 기존것이 있다면 바꿔주고, 없다면 만들어줌
+        refreshTokenRepository.findByUserId(authentication.getName())
+                .ifPresentOrElse(
+                        r-> {r.updateToken(newRefreshToken);
+                            log.info("issueRefreshToken method | change token ");
+                        },
+                        () -> {
+                            RefreshToken token = RefreshToken.createToken(authentication.getName(), newRefreshToken);
+                            log.info(" issueRefreshToken method | save tokenID : {}, token : {}", token.getUserId(), token.getToken());
+                            refreshTokenRepository.save(token);
+                        });
+
+        return newRefreshToken;
     }
 
     private Claims parseClaims(String accessToken) {
