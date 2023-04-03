@@ -2,9 +2,7 @@ package com.capstone.giftWeb.controller;
 
 import com.capstone.giftWeb.Service.AuthService;
 import com.capstone.giftWeb.dto.MemberLoginRequestDto;
-import com.capstone.giftWeb.dto.MemberResponseDto;
 import com.capstone.giftWeb.dto.MemberSignUpRequestDto;
-import com.capstone.giftWeb.dto.TokenDto;
 import com.capstone.giftWeb.dto.error.CreateError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody @Valid MemberLoginRequestDto requestDto, BindingResult bindingResult) {
+    public ResponseEntity login(@RequestBody @Valid MemberLoginRequestDto requestDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<ObjectError> allErrors = bindingResult.getAllErrors();
             String errorMessage = allErrors.get(0).getDefaultMessage();

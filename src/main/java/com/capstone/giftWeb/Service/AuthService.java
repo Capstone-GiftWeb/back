@@ -27,7 +27,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 public class AuthService {
-    private final AuthenticationManagerBuilder managerBuilder;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
@@ -81,9 +80,9 @@ public class AuthService {
 
     public ResponseEntity reIssue(HttpServletRequest request) {
         String resolveToken = resolveToken(request.getHeader("refresh"));
-        if (tokenProvider.validateToken(resolveToken)) {
+        if (tokenProvider.validateToken(resolveToken)&& tokenProvider.getStringFromRefreshToken(resolveToken).startsWith("refresh.")) {
             // 리프레시 토큰으로 아이디 정보 가져오기
-            String loginId = tokenProvider.getEmailFromToken(resolveToken);
+            String loginId = tokenProvider.getEmailFromRefreshToken(resolveToken);
             // 새로운 어세스 토큰 발급
             String newAccessToken = tokenProvider.createToken(loginId, "access");
             // 헤더에 어세스 토큰 추가

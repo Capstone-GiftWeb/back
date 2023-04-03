@@ -21,7 +21,6 @@ public class JwtFilter extends OncePerRequestFilter {
     public static final String BEARER_PREFIX = "Bearer ";
     private final TokenProvider tokenProvider;
 
-    private final RefreshTokenRepository refreshTokenRepository;
 
 
     private String resolveToken(HttpServletRequest request) {
@@ -37,11 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String accessToken = resolveToken(request);
 
         if (StringUtils.hasText(accessToken) && tokenProvider.validateToken(accessToken)) {
-            if (refreshTokenRepository.findByToken(accessToken).isPresent()){ //accessToken 값에 refreshToken을 보낸 경우
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            }
             String email= tokenProvider.getEmailFromToken(accessToken);
-
             Authentication authentication = tokenProvider.createAuthentication(email);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

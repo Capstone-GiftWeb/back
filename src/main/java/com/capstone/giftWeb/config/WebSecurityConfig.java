@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 public class WebSecurityConfig {
 
     private final TokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     @Bean
@@ -49,7 +48,7 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated()
 
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider,refreshTokenRepository));
+                .apply(new JwtSecurityConfig(tokenProvider));
 
         return http.build();
     }
