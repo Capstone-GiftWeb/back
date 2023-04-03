@@ -1,53 +1,41 @@
 package com.capstone.giftWeb.Service;
 
-import com.capstone.giftWeb.auth.AuthInfo;
-import com.capstone.giftWeb.dto.LogInCommand;
-import com.capstone.giftWeb.exception.IdPasswordNotMatchingException;
-import com.capstone.giftWeb.repository.MemberRepository;
+import com.capstone.giftWeb.config.SecurityUtil;
 import com.capstone.giftWeb.domain.Member;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.capstone.giftWeb.dto.MemberResponseDto;
+import com.capstone.giftWeb.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
-    @Autowired
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public MemberResponseDto getMyInfoBySecurity() {
+        return memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(MemberResponseDto::of)
+                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
+    }
 
     @Transactional
-    public Member createMember(Member member) {
-        if(!validateDuplicateMember(member)){
-            return null;
-        }
-        memberRepository.save(member);
-        return member;
+    public MemberResponseDto changeMemberName(String email, String name) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
+        member.setName(name);
+        return MemberResponseDto.of(memberRepository.save(member));
     }
 
-    private boolean validateDuplicateMember(Member member) {
-        return memberRepository.findByEmail(member.getEmail())
-                .isEmpty();
-    }
-
-    public AuthInfo loginAuth(LogInCommand logInCommand) throws Exception {
-        Optional<Member> findMember = memberRepository.findByEmail(logInCommand.getEmail());
-        Member member;
-        if (findMember.isEmpty()) {
-            throw new IdPasswordNotMatchingException();
-        } else {
-            member = findMember.get();
+    @Transactional
+    public MemberResponseDto changeMemberPassword(String email, String exPassword, String newPassword) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
+        if (!passwordEncoder.matches(exPassword, member.getPassword())) {
+            throw new RuntimeException("비밀번호가 맞지 않습니다");
         }
-        if (!member.matchPassword(logInCommand.getPassword())) {
-            throw new IdPasswordNotMatchingException();
-        }
-        return AuthInfo.builder()
-                .email(member.getEmail())
-                .name(member.getName())
-                .password(member.getPassword())
-                .gender(member.getGender())
-                .age(member.getAge()).build();
+        member.setPassword(passwordEncoder.encode((newPassword)));
+        return MemberResponseDto.of(memberRepository.save(member));
     }
-
 }

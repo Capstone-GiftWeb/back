@@ -1,4 +1,4 @@
-package com.capstone.giftWeb.gifts;
+package com.capstone.giftWeb.survice;
 
 import com.capstone.giftWeb.domain.Gift;
 import com.capstone.giftWeb.repository.GiftRepository;

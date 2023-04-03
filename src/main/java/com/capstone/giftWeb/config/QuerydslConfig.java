@@ -1,4 +1,4 @@
-package com.capstone.giftWeb;
+package com.capstone.giftWeb.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;
