@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 
 @Service
@@ -42,39 +43,55 @@ public class AuthService {
         return ResponseEntity.ok(MemberResponseDto.of(memberRepository.save(member)));
     }
 
-    public TokenDto login(MemberLoginRequestDto requestDto) {
-        UsernamePasswordAuthenticationToken authenticationToken = requestDto.toAuthentication();
+    public ResponseEntity login(MemberLoginRequestDto requestDto) {
+        // 아이디 검사
+        Optional<Member> member = memberRepository.findByEmail(requestDto.getEmail());
+        if (member.isEmpty()) {
+            return new CreateError().error("아이디가 맞지 않습니다.");
+        }
 
-        Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
+        // 비밀번호 검사
+        if (!passwordEncoder.matches(requestDto.getPassword(), member.get().getPassword())) {
+            return new CreateError().error("비밀번호가 맞지 않습니다.");
+        }
 
-        return tokenProvider.generateTokenDto(authentication);
+        // 아이디 정보로 Token생성
+        TokenDto tokenDto = tokenProvider.createAllToken(requestDto.getEmail());
+
+        // Refresh토큰 있는지 확인
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByMemberEmail(requestDto.getEmail());
+
+        // 있다면 새토큰 발급후 업데이트
+        // 없다면 새로 만들고 디비 저장
+        if (refreshToken.isPresent()) {
+            refreshToken.get().updateToken(tokenDto.getRefreshToken());
+        } else {
+            RefreshToken newToken = new RefreshToken(requestDto.getEmail(), tokenDto.getRefreshToken());
+            refreshTokenRepository.save(newToken);
+        }
+        return ResponseEntity.ok(tokenDto);
     }
+
     //token 앞에 "Bearer-" 제거
-    private String resolveToken(String token){
-        if(token.startsWith("Bearer"))
+    private String resolveToken(String token) {
+        if (token.startsWith("Bearer"))
             return token.substring(7);
         throw new RuntimeException("not valid refresh token !!");
     }
 
-    public ResponseEntity reIssue(HttpServletRequest request){
-        String resolveToken= resolveToken(request.getHeader("Refresh"));
-        if (tokenProvider.validateToken(resolveToken)){
-            Authentication authentication = tokenProvider.getAuthenticationForReIssue(resolveToken);
-            // 디비에 있는게 맞는지 확인
-            RefreshToken refreshToken = refreshTokenRepository.findByUserId(authentication.getName()).get();
-            if(!resolveToken.equals(refreshToken.getToken())){
-                return new CreateError().error("refresh token이 일치하지 않습니다.");
-            }
-
-            String newToken = tokenProvider.issueRefreshToken(authentication);  //새로 토큰값을 발급 후 수정
-            refreshToken.setToken(newToken);
-            refreshTokenRepository.save(refreshToken);
-
-            return ResponseEntity.ok(TokenDto.builder()
-                    .grantType(BEARER_TYPE)
-                    .accessToken(tokenProvider.createAccessToken(authentication))
-                    .refreshToken(newToken)
-                    .build());
+    public ResponseEntity reIssue(HttpServletRequest request) {
+        String resolveToken = resolveToken(request.getHeader("refresh"));
+        if (tokenProvider.validateToken(resolveToken)) {
+            // 리프레시 토큰으로 아이디 정보 가져오기
+            String loginId = tokenProvider.getEmailFromToken(resolveToken);
+            // 새로운 어세스 토큰 발급
+            String newAccessToken = tokenProvider.createToken(loginId, "access");
+            // 헤더에 어세스 토큰 추가
+            TokenDto tokenDto = TokenDto.builder()
+                    .accessToken(newAccessToken)
+                    .refreshToken(resolveToken)
+                    .build();
+            return ResponseEntity.ok(tokenDto);
         }
         return new CreateError().error("refresh token이 유효하지 않습니다.");
     }

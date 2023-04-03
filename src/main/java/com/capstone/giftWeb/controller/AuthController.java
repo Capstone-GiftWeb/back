@@ -45,7 +45,7 @@ public class AuthController {
             return new CreateError().error(errorMessage);
         }
 
-        return ResponseEntity.ok(authService.login(requestDto));
+        return authService.login(requestDto);
     }
 
     @PostMapping("/reissue")

@@ -3,6 +3,7 @@ package com.capstone.giftWeb.config;
 import com.capstone.giftWeb.jwt.JwtAccessDeniedHandler;
 import com.capstone.giftWeb.jwt.JwtAuthenticationEntryPoint;
 import com.capstone.giftWeb.jwt.TokenProvider;
+import com.capstone.giftWeb.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 public class WebSecurityConfig {
 
     private final TokenProvider tokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     @Bean
@@ -47,7 +49,7 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated()
 
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .apply(new JwtSecurityConfig(tokenProvider,refreshTokenRepository));
 
         return http.build();
     }

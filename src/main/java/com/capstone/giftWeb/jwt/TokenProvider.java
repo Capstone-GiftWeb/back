@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -48,71 +48,89 @@ public class TokenProvider {
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
 
+    public String createToken(String email, String type) {
 
+        Date date = new Date();
+
+        long time = type.equals("access") ? ACCESS_TOKEN_EXPIRE_TIME : REFRESH_TOKEN_EXPIRE_TIME;
+
+        return Jwts.builder()
+                .setSubject(email)
+                .setExpiration(new Date(date.getTime() + time))
+                .setIssuedAt(date)
+                .signWith(key)
+                .compact();
+
+    }
     // 토큰 생성
-    public TokenDto generateTokenDto(Authentication authentication) {
-        String accessToken=createAccessToken(authentication);
-        String refreshToken=issueRefreshToken(authentication);
-
-        return TokenDto.builder()
-                .grantType(BEARER_TYPE)
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+    public TokenDto createAllToken(String email) {
+        return new TokenDto(createToken(email, "access"), createToken(email, "refresh"));
     }
 
-    public String createAccessToken(Authentication authentication){
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+//    // 토큰 생성
+//    public TokenDto generateTokenDto(Authentication authentication) {
+//        String accessToken=createAccessToken(authentication);
+//        String refreshToken=issueRefreshToken(authentication);
+//
+//        return TokenDto.builder()
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .build();
+//    }
 
-        Date now = new Date();
-        Date tokenExpiresIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
+//    public String createAccessToken(Authentication authentication){
+//        String authorities = authentication.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .collect(Collectors.joining(","));
+//
+//        Date now = new Date();
+//        Date tokenExpiresIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
+//
+//        return Jwts.builder()
+//                .setSubject(authentication.getName())
+//                .claim(AUTHORITIES_KEY, authorities)
+//                .setExpiration(tokenExpiresIn)
+//                .signWith(key)
+//                .compact();
+//    }
 
-        return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .setExpiration(tokenExpiresIn)
-                .signWith(key)
-                .compact();
+
+//    public String createRefreshToken(Authentication authentication){
+//        Date now = new Date();
+//        Date validity = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+//
+//        return Jwts.builder()
+//                .setSubject(authentication.getName())
+//                .setIssuedAt(now)
+//                .signWith(key)
+//                .setExpiration(validity)
+//                .compact();
+//    }
+
+    // 인증 객체 생성
+    public Authentication createAuthentication(String email) {
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+        // spring security 내에서 가지고 있는 객체입니다. (UsernamePasswordAuthenticationToken)
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-
-    public String createRefreshToken(Authentication authentication){
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
-
-        return Jwts.builder()
-                .setSubject(authentication.getName())
-                .setIssuedAt(now)
-                .signWith(key)
-                .setExpiration(validity)
-                .compact();
+    // 토큰에서 email 가져오는 기능
+    public String getEmailFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
     }
 
-    public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+//    public Authentication getAuthentication(String token) {
+//        Claims claims = Jwts.parserBuilder()
+//                .setSigningKey(key)
+//                .build()
+//                .parseClaimsJws(token)
+//                .getBody();
+//
+//        UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
+//
+//        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
+//    }
 
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
-
-        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
-    }
-
-    public Authentication getAuthenticationForReIssue(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        UserDetails userDetails = customUserDetailsService.loadUserByUserId(claims.getSubject());
-
-        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
-    }
 
     public boolean validateToken(String token) {
         try {
@@ -130,24 +148,24 @@ public class TokenProvider {
         return false;
     }
 
-    @Transactional
-    public String issueRefreshToken(Authentication authentication){
-        String newRefreshToken = createRefreshToken(authentication);
-
-        // 기존것이 있다면 바꿔주고, 없다면 만들어줌
-        refreshTokenRepository.findByUserId(authentication.getName())
-                .ifPresentOrElse(
-                        r-> {r.updateToken(newRefreshToken);
-                            log.info("issueRefreshToken method | change token ");
-                        },
-                        () -> {
-                            RefreshToken token = RefreshToken.createToken(authentication.getName(), newRefreshToken);
-                            log.info(" issueRefreshToken method | save tokenID : {}, token : {}", token.getUserId(), token.getToken());
-                            refreshTokenRepository.save(token);
-                        });
-
-        return newRefreshToken;
-    }
+//    @Transactional
+//    public String issueRefreshToken(Authentication authentication){
+//        String newRefreshToken = createRefreshToken(authentication);
+//
+//        // 기존것이 있다면 바꿔주고, 없다면 만들어줌
+//        refreshTokenRepository.findByUserId(authentication.getName())
+//                .ifPresentOrElse(
+//                        r-> {r.updateToken(newRefreshToken);
+//                            log.info("issueRefreshToken method | change token ");
+//                        },
+//                        () -> {
+//                            RefreshToken token = RefreshToken.createToken(authentication.getName(), newRefreshToken);
+//                            log.info(" issueRefreshToken method | save tokenID : {}, token : {}", token.getMemberEmail(), token.getToken());
+//                            refreshTokenRepository.save(token);
+//                        });
+//
+//        return newRefreshToken;
+//    }
 
     private Claims parseClaims(String accessToken) {
         try {
