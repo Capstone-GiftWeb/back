@@ -1,16 +1,19 @@
 package com.capstone.giftWeb.controller;
 
 import com.capstone.giftWeb.Service.GiftService;
-import com.capstone.giftWeb.dto.GiftsDTO;
+import com.capstone.giftWeb.domain.Gift;
+import com.capstone.giftWeb.dto.GiftsDto;
+import com.capstone.giftWeb.dto.WordsDto;
+import com.capstone.giftWeb.enums.Field;
+import com.capstone.giftWeb.enums.GiftOrderType;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -19,47 +22,53 @@ public class GiftController {
     @Autowired
     GiftService giftService;
 
-    @GetMapping("/gifts/all")
-    public GiftsDTO makeGifts(){
-        List<String> gifts=giftService.makeAllGifts();
-        GiftsDTO giftsDTO=new GiftsDTO();
-        giftsDTO.setGifts(gifts);
-        return giftsDTO;
-    }
-
-    @GetMapping("/gifts")
-    public GiftsDTO makeCategoryGifts(@RequestParam("category")String category){
-        List<String> gifts=giftService.makeCategoryGifts(category);
-        GiftsDTO giftsDTO=new GiftsDTO();
-        giftsDTO.setGifts(gifts);
-        return giftsDTO;
-    }
 
     @GetMapping("/product/{number}")
-    public void giftKakao(@PathVariable("number") String number, HttpServletResponse response) throws IOException {
+    public void moveKakao(@PathVariable("number") String number, HttpServletResponse response) throws IOException {
 
         response.sendRedirect("https://gift.kakao.com/product/"+number);
     }
 
-    @GetMapping("gifts/review")
-    public GiftsDTO makeReivewGift(@RequestParam(value = "displayTag")String displayTag,@RequestParam(value = "priceRange")String priceRange){
-
-        List<String> gifts = giftService.makeReviewGifts(displayTag, priceRange);
-        GiftsDTO giftsDTO=new GiftsDTO();
-        giftsDTO.setGifts(gifts);
-
+    @GetMapping("/gifts")
+    public GiftsDto makeGifts(){
+        List<Gift> giftList =giftService.testGetGifts();
+        GiftsDto giftsDTO=new GiftsDto();
+        giftsDTO.setGifts(giftList);
         return giftsDTO;
     }
-    @GetMapping("test/gifts/review")
-    public ModelAndView testMakeReivewGift(@RequestParam(value = "displayTag")String displayTag, @RequestParam(value = "priceRange")String priceRange){
 
-        List<String> gifts = giftService.makeReviewGifts(displayTag, priceRange);
+    @GetMapping("/gifts/wordSearchShow.action")
+    public WordsDto wordSearchShow(@RequestParam("searchWord") String searchWord){
+        List<String> wordList;
+        wordList=giftService.wordSearchShow(searchWord);
+        WordsDto wordsDto=new WordsDto();
+        if(wordList!=null){
+            wordsDto.setWords(wordList);
+        }
+        return wordsDto;
+    }
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("testReviewGifts");
-        modelAndView.addObject("gifts",gifts);
-
-        return modelAndView;
+    @GetMapping("/gifts/search")
+    public GiftsDto searchGifts(@RequestParam(value="search")String search, @RequestParam(value="field",required = false)Field field,@RequestParam(value="order",required = false) GiftOrderType order){
+        List<Gift> giftList =giftService.searchGifts(search);
+        if (field!=null) {
+            if (field.equals(Field.PRICE)) {
+                if(order==null||order.equals(GiftOrderType.ASC)) {
+                    giftList.sort((o1, o2) -> o1.getPrice() - o2.getPrice());
+                } else if (order.equals(GiftOrderType.DESC)) {
+                    giftList.sort((o1, o2) -> o2.getPrice() - o1.getPrice());
+                }
+            } else if (field.equals(Field.TITLE)) {
+                if (order==null||order.equals(GiftOrderType.ASC)) {
+                    Collections.sort(giftList, (o1, o2) -> o1.getTitle().compareTo(o2.getTitle()));
+                } else if (order.equals(GiftOrderType.DESC)) {
+                    Collections.sort(giftList, (o1, o2) -> o2.getTitle().compareTo(o1.getTitle()));
+                }
+            }
+        }
+        GiftsDto giftsDTO=new GiftsDto();
+        giftsDTO.setGifts(giftList);
+        return giftsDTO;
     }
 
 }

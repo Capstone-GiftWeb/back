@@ -1,4 +1,4 @@
-package com.capstone.giftWeb;
+package com.capstone.giftWeb.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

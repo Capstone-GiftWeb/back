@@ -1,12 +1,13 @@
 package com.capstone.giftWeb.dto;
 
+import com.capstone.giftWeb.domain.Gift;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
 @Getter @Setter
-public class GiftsDTO {
+public class GiftsDto {
 
-    private List<String> gifts;
+    private List<Gift> gifts;
 }

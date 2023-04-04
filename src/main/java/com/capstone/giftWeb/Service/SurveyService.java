@@ -17,7 +17,7 @@ public class SurveyService {
         ClassPathResource resource = new ClassPathResource("/static/survey.json");
         Reader reader = new FileReader(resource.getFile());
         StringBuffer stringBuffer=new StringBuffer();
-        int cur = 0;
+        int cur;
         while((cur = reader.read()) != -1){
             stringBuffer.append((char)cur);
         }
