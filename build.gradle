@@ -36,9 +36,9 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
-	implementation "org.apache.mahout:mahout-hdfs:0.10.0"
-	implementation "org.apache.mahout:mahout-math:0.10.0"
+	implementation "org.apache.mahout:mahout-math:0.13.0"
 	implementation "org.apache.mahout:mahout-core:0.9"
+	implementation "org.apache.mahout:mahout-integration:0.13.0"
 	implementation 'org.seleniumhq.selenium:selenium-java:4.8.0'
 	compile 'org.javassist:javassist:3.18.2-GA'
 

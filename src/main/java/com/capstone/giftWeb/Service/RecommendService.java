@@ -1,16 +1,10 @@
 package com.capstone.giftWeb.Service;
 import com.capstone.giftWeb.dto.RecommendDto;
-import org.apache.mahout.cf.taste.common.Refreshable;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.eval.RecommenderBuilder;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
-import org.apache.mahout.cf.taste.impl.common.FastIDSet;
-import org.apache.mahout.cf.taste.impl.common.LongPrimitiveIterator;
-import org.apache.mahout.cf.taste.impl.common.jdbc.AbstractJDBCComponent;
-import org.apache.mahout.cf.taste.impl.model.AbstractDataModel;
-import org.apache.mahout.cf.taste.impl.model.GenericDataModel;
-import org.apache.mahout.cf.taste.impl.model.GenericItemPreferenceArray;
 import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
+import org.apache.mahout.cf.taste.impl.model.jdbc.MySQLJDBCDataModel;
 import org.apache.mahout.cf.taste.impl.neighborhood.NearestNUserNeighborhood;
 import org.apache.mahout.cf.taste.impl.recommender.GenericUserBasedRecommender;
 import org.apache.mahout.cf.taste.impl.similarity.EuclideanDistanceSimilarity;
@@ -25,11 +19,9 @@ import org.apache.mahout.common.RandomUtils;
 import org.mariadb.jdbc.MariaDbDataSource;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -45,6 +37,15 @@ public class RecommendService {
 
         DataModel model = new FileDataModel(new File("src/main/java/com/capstone/giftWeb/Service/dataset-recsys.csv"));
 
+        MariaDbDataSource dataSource = new MariaDbDataSource();
+        dataSource.setServerName("localhost");
+        dataSource.setUser("root");
+        dataSource.setPassword("byeonguk");
+        dataSource.setDatabaseName("capstone");
+        JDBCDataModel model1 =
+                new MySQLJDBCDataModel(dataSource, "preference", "member_id", "category_id", "pref_score", null);
+
+        /*
         final String driver = "org.mariadb.jdbc.Driver";
         final String DB_IP = "localhost";
         final String DB_PORT = "3306";
@@ -61,7 +62,6 @@ public class RecommendService {
             if (conn != null) {
                 System.out.println("DB 접속 성공");
             }
-
         } catch (ClassNotFoundException e) {
             System.out.println("드라이버 로드 실패");
             e.printStackTrace();
@@ -76,17 +76,33 @@ public class RecommendService {
             pstmt = conn.prepareStatement(sql);
 
             rs = pstmt.executeQuery();
-            String userId = null;
+            Long memberId = null;
             Long categoryId = null;
-            Long prefScore = null;
+            Float prevScore = null;
+            Boolean doLike = null;
+            Long clicks = null;
+            Float prefScore = null;
+
             while (rs.next()) {
-                userId = rs.getString(1);
+                memberId = Long.parseLong(rs.getString(1));
                 categoryId = Long.parseLong(rs.getString(2));
-                prefScore = Long.parseLong(rs.getString(3));
+                prevScore = Float.parseFloat(rs.getString(3));
+                doLike = Boolean.parseBoolean(rs.getString(4));
+                clicks = Long.parseLong(rs.getString(5));
+
+                if (prefScore < 10) {
+                    prefScore = Float.parseFloat(rs.getString(6));
+                    if (doLike) {
+                        prefScore += 3;
+                    }
+                    prefScore = (float) (prefScore + Float.parseFloat(clicks.toString()) * 0.5);
+                }
             }
 
-            System.out.println(userId);
+            System.out.println(memberId);
             System.out.println(categoryId);
+            System.out.println("previous score is : " + prevScore);
+            System.out.println("Liked? > " + doLike);
             System.out.println(prefScore);
 
         } catch (SQLException e) {
@@ -96,6 +112,7 @@ public class RecommendService {
                 if (rs != null) {
                     rs.close();
                 }
+
                 if (pstmt != null) {
                     pstmt.close();
                 }
@@ -107,6 +124,7 @@ public class RecommendService {
                 e.printStackTrace();
             }
         }
+        */
 
         long key = 0;
         FastByIDMap<PreferenceArray> preferences = new FastByIDMap<PreferenceArray>();
@@ -130,7 +148,7 @@ public class RecommendService {
         };
 
         // 여기서는 user-based recommender이 반환되어 recommender에 들어감
-        Recommender recommender = recommenderBuilder.buildRecommender(model);
+        Recommender recommender = recommenderBuilder.buildRecommender(model1);
         // 유저 id 1에게 5개의 아이템을 추천해줌
         List<RecommendedItem> recommendations = recommender.recommend(1, 5);
 

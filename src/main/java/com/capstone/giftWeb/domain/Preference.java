@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 @Entity
 @NoArgsConstructor
+@IdClass(Preference.class)
 public class Preference implements Serializable {
 
     @Id
@@ -19,24 +20,24 @@ public class Preference implements Serializable {
     private Long categoryId;
 
     @Column(name = "prev_score")
-    private Long prevScore;
+    private Float prevScore;
 
-    @Column(name = "like")
+    @Column(name = "do_like")
     @ColumnDefault("false")
-    private Boolean like;
+    private Boolean doLike;
 
     @Column(name = "clicks")
     private Long clicks;
 
     @Column(name = "pref_score")
-    private Long prefScore;
+    private Float prefScore;
 
     @Builder
-    public Preference(Long userId, Long categoryId, Long prevScore, Boolean like, Long clicks, Long prefScore) {
+    public Preference(Long userId, Long categoryId, Float prevScore, Boolean doLike, Long clicks, Float prefScore) {
         this.userId = userId;
         this.categoryId = categoryId;
         this.prevScore = prevScore;
-        this.like = like;
+        this.doLike = doLike;
         this.clicks = clicks;
         this.prefScore = prefScore;
     }
