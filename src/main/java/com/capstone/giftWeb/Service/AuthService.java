@@ -12,9 +12,6 @@ import com.capstone.giftWeb.repository.MemberRepository;
 import com.capstone.giftWeb.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +62,7 @@ public class AuthService {
         if (refreshToken.isPresent()) {
             refreshToken.get().updateToken(tokenDto.getRefreshToken());
         } else {
-            RefreshToken newToken = new RefreshToken(requestDto.getEmail(), tokenDto.getRefreshToken());
+            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(),requestDto.getEmail());
             refreshTokenRepository.save(newToken);
         }
         return ResponseEntity.ok(tokenDto);
@@ -80,12 +77,14 @@ public class AuthService {
 
     public ResponseEntity reIssue(HttpServletRequest request) {
         String resolveToken = resolveToken(request.getHeader("refresh"));
-        if (tokenProvider.validateToken(resolveToken)&& tokenProvider.getStringFromRefreshToken(resolveToken).startsWith("refresh.")) {
+        Optional<RefreshToken> findRefreshToken=refreshTokenRepository.findById(resolveToken);
+        if (findRefreshToken.isPresent()&&tokenProvider.validateToken(resolveToken)&& tokenProvider.getStringFromRefreshToken(resolveToken).startsWith("refresh.")) {
+
             // 리프레시 토큰으로 아이디 정보 가져오기
-            String loginId = tokenProvider.getEmailFromRefreshToken(resolveToken);
+            String email = tokenProvider.getEmailFromRefreshToken(resolveToken);
             // 새로운 어세스 토큰 발급
-            String newAccessToken = tokenProvider.createToken(loginId, "access");
-            // 헤더에 어세스 토큰 추가
+            String newAccessToken = tokenProvider.createToken(email, "access");
+
             TokenDto tokenDto = TokenDto.builder()
                     .accessToken(newAccessToken)
                     .refreshToken(resolveToken)
