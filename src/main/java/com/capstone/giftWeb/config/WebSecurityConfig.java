@@ -44,7 +44,7 @@ public class WebSecurityConfig {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth/**","/swagger-ui/**","/swagger-resources/**","/swagger-resources/**","/v3/api-docs/**").permitAll()
+                .antMatchers("/","/auth/**","/swagger-ui/**","/swagger-resources/**","/swagger-resources/**","/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
 
                 .and()

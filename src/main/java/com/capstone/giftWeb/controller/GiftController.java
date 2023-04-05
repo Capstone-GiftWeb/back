@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
+@CrossOrigin(originPatterns = "*")
 public class GiftController {
 
     @Autowired

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@CrossOrigin(originPatterns = "*")
 public class HomeController {
 
     @GetMapping("/")
