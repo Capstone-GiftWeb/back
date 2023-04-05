@@ -1,5 +1,6 @@
 package com.capstone.giftWeb.jwt;
 
+import com.capstone.giftWeb.enums.JwtCode;
 import com.capstone.giftWeb.repository.RefreshTokenRepository;
 import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
         String accessToken = resolveToken(request);
 
-        if (StringUtils.hasText(accessToken) && tokenProvider.validateToken(accessToken)) {
+        if (StringUtils.hasText(accessToken) && tokenProvider.validateToken(accessToken).equals(JwtCode.VALID)) {
             String email= tokenProvider.getEmailFromToken(accessToken);
             Authentication authentication = tokenProvider.createAuthentication(email);
             SecurityContextHolder.getContext().setAuthentication(authentication);

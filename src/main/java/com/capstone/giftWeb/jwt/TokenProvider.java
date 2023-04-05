@@ -3,6 +3,7 @@ package com.capstone.giftWeb.jwt;
 import com.capstone.giftWeb.Service.CustomUserDetailsService;
 import com.capstone.giftWeb.domain.RefreshToken;
 import com.capstone.giftWeb.dto.TokenDto;
+import com.capstone.giftWeb.enums.JwtCode;
 import com.capstone.giftWeb.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -94,20 +95,23 @@ public class TokenProvider {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody().getSubject();
     }
 
-    public boolean validateToken(String token) {
+    public JwtCode validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
+            return JwtCode.VALID;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
+            return JwtCode.MALFORM;
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
+            return JwtCode.EXP;
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
+            return JwtCode.UNSUPPRT;
         } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘못되었습니다.");
+            return JwtCode.ILLEGAL;
         }
-        return false;
     }
 
 }
