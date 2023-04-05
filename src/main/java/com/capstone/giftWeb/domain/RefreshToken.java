@@ -3,32 +3,31 @@ package com.capstone.giftWeb.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
+@RedisHash(value = "refreshToken", timeToLive = 1000 * 60 * 60 * 24 * 14)
 public class RefreshToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "refresh_token_id")
-    private Long id;
-    @NotBlank
     private String token;
     @NotBlank
+    @Indexed
     private String memberEmail;
 
-    public RefreshToken(String memberEmail, String token) {
+    public RefreshToken(String token, String memberEmail) {
         this.memberEmail = memberEmail;
         this.token = token;
     }
 
-    public static RefreshToken createToken(String userId, String token){
-        return new RefreshToken(userId, token);
+    public static RefreshToken createToken(String token, String email) {
+        return new RefreshToken(token, email);
     }
 
 
