@@ -56,16 +56,15 @@ public class AuthService {
         TokenDto tokenDto = tokenProvider.createAllToken(requestDto.getEmail());
 
         // Refresh토큰 있는지 확인
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByMemberEmail(requestDto.getEmail());
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(requestDto.getEmail());
 
         // 있다면 새토큰 발급후 업데이트
         // 없다면 새로 만들고 디비 저장
         if (refreshToken.isPresent()) {
-            refreshTokenRepository.delete(refreshToken.get());
             refreshToken.get().updateToken(tokenDto.getRefreshToken());
             refreshTokenRepository.save(refreshToken.get());
         } else {
-            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(),requestDto.getEmail());
+            RefreshToken newToken = new RefreshToken(requestDto.getEmail(), tokenDto.getRefreshToken());
             refreshTokenRepository.save(newToken);
         }
         return ResponseEntity.ok(tokenDto);
@@ -80,9 +79,9 @@ public class AuthService {
 
     public ResponseEntity reIssue(HttpServletRequest request) {
         String resolveToken = resolveToken(request.getHeader("refresh"));
-        Optional<RefreshToken> findRefreshToken=refreshTokenRepository.findById(resolveToken);
-        JwtCode code=tokenProvider.validateToken(resolveToken);
-        if (findRefreshToken.isPresent()&&code.equals(JwtCode.VALID)&& tokenProvider.getStringFromRefreshToken(resolveToken).startsWith("refresh.")) {
+        Optional<RefreshToken> findRefreshToken = refreshTokenRepository.findByToken(resolveToken);
+        JwtCode code = tokenProvider.validateToken(resolveToken);
+        if (findRefreshToken.isPresent() && resolveToken.equals(findRefreshToken.get().getToken()) && code.equals(JwtCode.VALID) && tokenProvider.getStringFromRefreshToken(resolveToken).startsWith("refresh.")) {
 
             // 리프레시 토큰으로 아이디 정보 가져오기
             String email = tokenProvider.getEmailFromRefreshToken(resolveToken);
@@ -98,7 +97,7 @@ public class AuthService {
             return new CreateError().error("JWT 토큰이 잘못되었습니다.");
         } else if (code.equals(JwtCode.MALFORM)) {
             return new CreateError().error("잘못된 JWT 서명입니다.");
-        }else if (code.equals(JwtCode.UNSUPPRT)){
+        } else if (code.equals(JwtCode.UNSUPPRT)) {
             return new CreateError().error("지원되지 않는 JWT 토큰입니다.");
         } else if (code.equals(JwtCode.EXP)) {
             return new CreateError().error("만료된 JWT 토큰입니다.");

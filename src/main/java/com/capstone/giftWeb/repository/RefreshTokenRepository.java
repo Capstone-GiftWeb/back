@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 @Repository
 public interface RefreshTokenRepository extends CrudRepository<RefreshToken, String> {
-    Optional<RefreshToken> findByMemberEmail(String email);
 
     Optional<RefreshToken> findByToken(String token);
 }
