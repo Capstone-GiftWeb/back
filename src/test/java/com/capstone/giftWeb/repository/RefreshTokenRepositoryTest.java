@@ -35,7 +35,7 @@ class RefreshTokenRepositoryTest {
         RefreshToken refreshToken=new RefreshToken("123123",email);
         refreshTokenRepository.save(refreshToken);
 
-        Optional<RefreshToken> findRefreshToken= refreshTokenRepository.findByMemberEmail(email);
+        Optional<RefreshToken> findRefreshToken= refreshTokenRepository.findById(email);
 
         refreshTokenRepository.delete(refreshToken);
 

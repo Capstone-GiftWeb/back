@@ -25,7 +25,7 @@ public class MemberSignUpRequestDto {
     @NotEmpty(message="성별을 입력해주세요.")
     @Pattern(regexp = "^(남자|여자)$", message = "성별은 '남자' 또는 '여자'만 입력 가능합니다.")
     private String gender;
-    @NotEmpty(message="나이를 입력해주세요.")
+    @NotNull(message="나이를 입력해주세요.")
     @Positive(message = "0이나 음수는 입력할 수 없습니다.")
     private int age;
     @NotEmpty(message = "비밀번호를 입력해주세요.")

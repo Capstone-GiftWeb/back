@@ -29,6 +29,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+
+
     private static final String BEARER_TYPE = "bearer";
 
     public ResponseEntity signup(MemberSignUpRequestDto requestDto) {
@@ -37,7 +39,8 @@ public class AuthService {
         }
 
         Member member = requestDto.toMember(passwordEncoder);
-        return ResponseEntity.ok(MemberResponseDto.of(memberRepository.save(member)));
+        memberRepository.save(member);
+        return ResponseEntity.ok(MemberResponseDto.of(member));
     }
 
     public ResponseEntity login(MemberLoginRequestDto requestDto) {
@@ -81,7 +84,7 @@ public class AuthService {
         String resolveToken = resolveToken(request.getHeader("refresh"));
         Optional<RefreshToken> findRefreshToken = refreshTokenRepository.findByToken(resolveToken);
         JwtCode code = tokenProvider.validateToken(resolveToken);
-        if (findRefreshToken.isPresent() && resolveToken.equals(findRefreshToken.get().getToken()) && code.equals(JwtCode.VALID) && tokenProvider.getStringFromRefreshToken(resolveToken).startsWith("refresh.")) {
+        if (findRefreshToken.isPresent() && code.equals(JwtCode.VALID) && tokenProvider.getStringFromRefreshToken(resolveToken).startsWith("refresh.")) {
 
             // 리프레시 토큰으로 아이디 정보 가져오기
             String email = tokenProvider.getEmailFromRefreshToken(resolveToken);
