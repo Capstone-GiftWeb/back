@@ -1,9 +1,9 @@
 package com.capstone.giftWeb.config;
 
+import com.capstone.giftWeb.Service.CustomOAuth2UserService;
 import com.capstone.giftWeb.jwt.JwtAccessDeniedHandler;
 import com.capstone.giftWeb.jwt.JwtAuthenticationEntryPoint;
 import com.capstone.giftWeb.jwt.TokenProvider;
-import com.capstone.giftWeb.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +24,9 @@ public class WebSecurityConfig {
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -34,6 +37,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic().disable()
+                .formLogin().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
