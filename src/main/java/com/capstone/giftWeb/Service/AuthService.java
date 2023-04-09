@@ -1,5 +1,6 @@
 package com.capstone.giftWeb.Service;
 
+import com.capstone.giftWeb.config.SecurityUtil;
 import com.capstone.giftWeb.domain.Member;
 import com.capstone.giftWeb.domain.RefreshToken;
 import com.capstone.giftWeb.dto.MemberLoginRequestDto;
@@ -43,11 +44,11 @@ public class AuthService {
         return ResponseEntity.ok(MemberResponseDto.of(member));
     }
 
-    public ResponseEntity login(MemberLoginRequestDto requestDto) {
+    public ResponseEntity login(HttpServletRequest request,MemberLoginRequestDto requestDto) {
         // 아이디 검사
         Optional<Member> member = memberRepository.findByEmail(requestDto.getEmail());
         if (member.isEmpty()) {
-            return new CreateError().error("아이디가 맞지 않습니다.");
+            return new CreateError().error("이메일이 맞지 않습니다.");
         }
 
         // 비밀번호 검사
@@ -67,7 +68,11 @@ public class AuthService {
             refreshToken.get().updateToken(tokenDto.getRefreshToken());
             refreshTokenRepository.save(refreshToken.get());
         } else {
-            RefreshToken newToken = new RefreshToken(member.get().getId(), tokenDto.getRefreshToken());
+            RefreshToken newToken = RefreshToken.builder()
+                    .memberId(member.get().getId())
+                    .ip(SecurityUtil.getClientIp(request))
+                    .token(tokenDto.getRefreshToken())
+                    .build();
             refreshTokenRepository.save(newToken);
         }
         return ResponseEntity.ok(tokenDto);

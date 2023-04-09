@@ -34,14 +34,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid MemberLoginRequestDto requestDto, BindingResult bindingResult) {
+    public ResponseEntity login(
+            HttpServletRequest request,
+            @RequestBody @Valid MemberLoginRequestDto requestDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<ObjectError> allErrors = bindingResult.getAllErrors();
             String errorMessage = allErrors.get(0).getDefaultMessage();
             return new CreateError().error(errorMessage);
         }
 
-        return authService.login(requestDto);
+        return authService.login(request,requestDto);
     }
 
     @PostMapping("/reissue")
