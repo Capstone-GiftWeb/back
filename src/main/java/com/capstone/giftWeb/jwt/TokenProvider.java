@@ -53,12 +53,11 @@ public class TokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(Long memberId) {
+    public String createRefreshToken() {
         Date date = new Date();
 
         long time = REFRESH_TOKEN_EXPIRE_TIME;
         return Jwts.builder()
-                .setSubject(String.valueOf(memberId))
                 .setExpiration(new Date(date.getTime()+time))
                 .setIssuedAt(date)
                 .signWith(key)
@@ -66,8 +65,8 @@ public class TokenProvider {
     }
 
     // 토큰 생성
-    public TokenDto createAllToken(String email,Long memberId) {
-        return new TokenDto(createAccessToken(email), createRefreshToken(memberId));
+    public TokenDto createAllToken(String email) {
+        return new TokenDto(createAccessToken(email), createRefreshToken());
     }
 
     // 인증 객체 생성
@@ -82,17 +81,7 @@ public class TokenProvider {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
     }
 
-    public Long getIdFromRefreshToken(String refreshToken) {
-        try {
-            return Long.parseLong(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody().getSubject());
-        }catch (Exception e){
-            throw new RuntimeException("유효하지 않은 jwt토큰입니다.");
-        }
-    }
 
-//    public String getStringFromRefreshToken(String refreshToken) {
-//        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody().getSubject();
-//    }
 
     public JwtCode validateToken(String token) {
         try {

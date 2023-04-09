@@ -44,7 +44,7 @@ public class AuthService {
         return ResponseEntity.ok(MemberResponseDto.of(member));
     }
 
-    public ResponseEntity login(HttpServletRequest request,MemberLoginRequestDto requestDto) {
+    public ResponseEntity login(HttpServletRequest request, MemberLoginRequestDto requestDto) {
         // 아이디 검사
         Optional<Member> member = memberRepository.findByEmail(requestDto.getEmail());
         if (member.isEmpty()) {
@@ -57,10 +57,10 @@ public class AuthService {
         }
 
         // 아이디 정보로 Token생성
-        TokenDto tokenDto = tokenProvider.createAllToken(requestDto.getEmail(),member.get().getId());
+        TokenDto tokenDto = tokenProvider.createAllToken(requestDto.getEmail());
 
         // Refresh토큰 있는지 확인
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(requestDto.getEmail());
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(member.get().getId());
 
         // 있다면 새토큰 발급후 업데이트
         // 없다면 새로 만들고 디비 저장
@@ -88,13 +88,13 @@ public class AuthService {
         String resolveToken = resolveToken(request.getHeader("refresh"));
         Optional<RefreshToken> findRefreshToken = refreshTokenRepository.findByToken(resolveToken);
         JwtCode code = tokenProvider.validateToken(resolveToken);
-        // 리프레시 토큰으로 아이디 정보 가져오기
-        Long memberId = tokenProvider.getIdFromRefreshToken(resolveToken);
-        Optional<Member> member=memberRepository.findById(memberId);
-        if (member.isPresent()&&findRefreshToken.isPresent() && code.equals(JwtCode.VALID)) {
 
+        if (findRefreshToken.isPresent() && code.equals(JwtCode.VALID)) {
 
-            String email=memberRepository.findById(memberId).get().getEmail();
+            // 리프레시 토큰으로 아이디 정보 가져오기
+            Long memberId = findRefreshToken.get().getMemberId();
+            Optional<Member> member = memberRepository.findById(memberId);
+            String email = member.get().getEmail();
             // 새로운 어세스 토큰 발급
             String newAccessToken = tokenProvider.createAccessToken(email);
 
