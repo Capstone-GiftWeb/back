@@ -9,7 +9,6 @@ import javax.validation.constraints.NotBlank;
 
 @Builder
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 @RedisHash(value = "refreshToken", timeToLive = 1000 * 60 * 60 * 24 * 14) // 2주
 public class RefreshToken {
@@ -18,7 +17,6 @@ public class RefreshToken {
     @Id
     private Long memberId;
 
-    private String ip;
 
     @Indexed
     private String token;

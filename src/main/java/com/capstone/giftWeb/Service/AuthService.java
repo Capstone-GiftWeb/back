@@ -70,7 +70,6 @@ public class AuthService {
         } else {
             RefreshToken newToken = RefreshToken.builder()
                     .memberId(member.get().getId())
-                    .ip(SecurityUtil.getClientIp(request))
                     .token(tokenDto.getRefreshToken())
                     .build();
             refreshTokenRepository.save(newToken);
