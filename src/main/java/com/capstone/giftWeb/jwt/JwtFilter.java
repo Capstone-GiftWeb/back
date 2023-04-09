@@ -1,11 +1,8 @@
 package com.capstone.giftWeb.jwt;
 
 import com.capstone.giftWeb.enums.JwtCode;
-import com.capstone.giftWeb.repository.RefreshTokenRepository;
 import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;

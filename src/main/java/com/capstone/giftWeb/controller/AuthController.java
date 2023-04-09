@@ -22,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Object> signup(@RequestBody @Valid MemberSignUpRequestDto requestDto, BindingResult bindingResult) {
+    public ResponseEntity<Object> signup(HttpServletRequest request,@RequestBody @Valid MemberSignUpRequestDto requestDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<ObjectError> allErrors = bindingResult.getAllErrors();
             String errorMessage = allErrors.get(0).getDefaultMessage();
@@ -30,7 +30,7 @@ public class AuthController {
         }
 
 
-        return authService.signup(requestDto);
+        return authService.signup(request,requestDto);
     }
 
     @PostMapping("/login")

@@ -16,9 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -72,7 +76,9 @@ class AuthServiceTest {
         doReturn(member).when(memberRepository).save(member);
 
         // when
-        ResponseEntity response = authService.signup(requestDto);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("HTTP_CLIENT_IP","127.0.0.1");
+        ResponseEntity response = authService.signup(request,requestDto);
 
         // then
         Member saveMember=memberRepository.save(member);

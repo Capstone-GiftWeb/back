@@ -34,12 +34,13 @@ public class AuthService {
 
     private static final String BEARER_TYPE = "bearer";
 
-    public ResponseEntity signup(MemberSignUpRequestDto requestDto) {
+    public ResponseEntity signup(HttpServletRequest request,MemberSignUpRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
             return new CreateError().error("이미 가입되어 있는 유저입니다");
         }
 
         Member member = requestDto.toMember(passwordEncoder);
+        member.setIp(SecurityUtil.getClientIp(request));
         memberRepository.save(member);
         return ResponseEntity.ok(MemberResponseDto.of(member));
     }
@@ -50,6 +51,8 @@ public class AuthService {
         if (member.isEmpty()) {
             return new CreateError().error("이메일이 맞지 않습니다.");
         }
+        String exIp=member.get().getIp();
+
 
         // 비밀번호 검사
         if (!passwordEncoder.matches(requestDto.getPassword(), member.get().getPassword())) {
