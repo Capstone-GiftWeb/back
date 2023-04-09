@@ -56,7 +56,7 @@ public class AuthService {
         }
 
         // 아이디 정보로 Token생성
-        TokenDto tokenDto = tokenProvider.createAllToken(requestDto.getEmail());
+        TokenDto tokenDto = tokenProvider.createAllToken(requestDto.getEmail(),member.get().getId());
 
         // Refresh토큰 있는지 확인
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(requestDto.getEmail());
@@ -67,7 +67,7 @@ public class AuthService {
             refreshToken.get().updateToken(tokenDto.getRefreshToken());
             refreshTokenRepository.save(refreshToken.get());
         } else {
-            RefreshToken newToken = new RefreshToken(requestDto.getEmail(), tokenDto.getRefreshToken());
+            RefreshToken newToken = new RefreshToken(member.get().getId(), tokenDto.getRefreshToken());
             refreshTokenRepository.save(newToken);
         }
         return ResponseEntity.ok(tokenDto);
@@ -77,19 +77,22 @@ public class AuthService {
     private String resolveToken(String token) {
         if (token.startsWith("Bearer"))
             return token.substring(7);
-        throw new RuntimeException("not valid refresh token !!");
+        throw new RuntimeException("유효하지 않은 토큰입니다.");
     }
 
     public ResponseEntity reIssue(HttpServletRequest request) {
         String resolveToken = resolveToken(request.getHeader("refresh"));
         Optional<RefreshToken> findRefreshToken = refreshTokenRepository.findByToken(resolveToken);
         JwtCode code = tokenProvider.validateToken(resolveToken);
-        if (findRefreshToken.isPresent() && code.equals(JwtCode.VALID) && tokenProvider.getStringFromRefreshToken(resolveToken).startsWith("refresh.")) {
+        // 리프레시 토큰으로 아이디 정보 가져오기
+        Long memberId = tokenProvider.getIdFromRefreshToken(resolveToken);
+        Optional<Member> member=memberRepository.findById(memberId);
+        if (member.isPresent()&&findRefreshToken.isPresent() && code.equals(JwtCode.VALID)) {
 
-            // 리프레시 토큰으로 아이디 정보 가져오기
-            String email = tokenProvider.getEmailFromRefreshToken(resolveToken);
+
+            String email=memberRepository.findById(memberId).get().getEmail();
             // 새로운 어세스 토큰 발급
-            String newAccessToken = tokenProvider.createToken(email, "access");
+            String newAccessToken = tokenProvider.createAccessToken(email);
 
             TokenDto tokenDto = TokenDto.builder()
                     .accessToken(newAccessToken)

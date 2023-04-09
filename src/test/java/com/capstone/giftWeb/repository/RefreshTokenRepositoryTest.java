@@ -29,17 +29,4 @@ class RefreshTokenRepositoryTest {
         String refreshToken="refresh!!";
     }
 
-    @Test
-    void findByMemberEmail() {
-        String email="rmagksfla@naver.com";
-        RefreshToken refreshToken=new RefreshToken("123123",email);
-        refreshTokenRepository.save(refreshToken);
-
-        Optional<RefreshToken> findRefreshToken= refreshTokenRepository.findById(email);
-
-        refreshTokenRepository.delete(refreshToken);
-
-        assertEquals(refreshToken.getMemberEmail(),findRefreshToken.get().getMemberEmail());
-        assertEquals(refreshToken.getToken(),findRefreshToken.get().getToken());
-    }
 }

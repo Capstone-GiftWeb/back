@@ -17,17 +17,17 @@ public class RefreshToken {
 
     @NotBlank
     @Id
-    private String memberEmail;
+    private Long memberId;
 
     @Indexed
     private String token;
-    public RefreshToken(String memberEmail,String token) {
-        this.memberEmail = memberEmail;
+    public RefreshToken(Long memberId,String token) {
+        this.memberId=memberId;
         this.token = token;
     }
 
-    public static RefreshToken createToken(String memberEmail,String token) {
-        return new RefreshToken(memberEmail,token);
+    public static RefreshToken createToken(Long memberId,String token) {
+        return new RefreshToken(memberId,token);
     }
 
 

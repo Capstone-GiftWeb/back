@@ -1,7 +1,6 @@
 package com.capstone.giftWeb.jwt;
 
 import com.capstone.giftWeb.Service.CustomUserDetailsService;
-import com.capstone.giftWeb.domain.RefreshToken;
 import com.capstone.giftWeb.dto.TokenDto;
 import com.capstone.giftWeb.enums.JwtCode;
 import com.capstone.giftWeb.repository.RefreshTokenRepository;
@@ -13,15 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class TokenProvider {
@@ -45,34 +40,34 @@ public class TokenProvider {
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
 
-    public String createToken(String email, String type) {
+    public String createAccessToken(String email) {
 
         Date date = new Date();
 
-        long time;
-        if (type.equals("access")) {
-            time = ACCESS_TOKEN_EXPIRE_TIME;
-            return Jwts.builder()
-                    .setSubject(email)
-                    .setExpiration(new Date(date.getTime() + time))
-                    .setIssuedAt(date)
-                    .signWith(key)
-                    .compact();
-        }else{
-            time = REFRESH_TOKEN_EXPIRE_TIME;
-            return Jwts.builder()
-                    .setSubject(String.format("refresh.%s",email))
-                    .setExpiration(new Date(date.getTime() + time))
-                    .setIssuedAt(date)
-                    .signWith(key)
-                    .compact();
-        }
+        long time = ACCESS_TOKEN_EXPIRE_TIME;
+        return Jwts.builder()
+                .setSubject(email)
+                .setExpiration(new Date(date.getTime() + time))
+                .setIssuedAt(date)
+                .signWith(key)
+                .compact();
+    }
 
+    public String createRefreshToken(Long memberId) {
+        Date date = new Date();
+
+        long time = REFRESH_TOKEN_EXPIRE_TIME;
+        return Jwts.builder()
+                .setSubject(String.valueOf(memberId))
+                .setExpiration(new Date(date.getTime()+time))
+                .setIssuedAt(date)
+                .signWith(key)
+                .compact();
     }
 
     // 토큰 생성
-    public TokenDto createAllToken(String email) {
-        return new TokenDto(createToken(email, "access"), createToken(email, "refresh"));
+    public TokenDto createAllToken(String email,Long memberId) {
+        return new TokenDto(createAccessToken(email), createRefreshToken(memberId));
     }
 
     // 인증 객체 생성
@@ -87,13 +82,17 @@ public class TokenProvider {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
     }
 
-    public String getEmailFromRefreshToken(String refreshToken){
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody().getSubject().substring(8);
+    public Long getIdFromRefreshToken(String refreshToken) {
+        try {
+            return Long.parseLong(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody().getSubject());
+        }catch (Exception e){
+            throw new RuntimeException("유효하지 않은 jwt토큰입니다.");
+        }
     }
 
-    public String getStringFromRefreshToken(String refreshToken){
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody().getSubject();
-    }
+//    public String getStringFromRefreshToken(String refreshToken) {
+//        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody().getSubject();
+//    }
 
     public JwtCode validateToken(String token) {
         try {
