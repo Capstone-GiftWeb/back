@@ -52,6 +52,10 @@ public class AuthService {
             return new CreateError().error("이메일이 맞지 않습니다.");
         }
         String exIp=member.get().getIp();
+        String newIp=SecurityUtil.getClientIp(request);
+        if (!exIp.equals(newIp)){ //최근에 로그인했던 ip와 현재 로그인한 ip가 다를 경우
+            System.out.println("ip 다름");
+        }
 
 
         // 비밀번호 검사
