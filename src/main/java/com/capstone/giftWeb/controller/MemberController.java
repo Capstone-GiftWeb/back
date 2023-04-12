@@ -26,7 +26,6 @@ import static com.capstone.giftWeb.enums.Gender.MALE;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
-@CrossOrigin(originPatterns = "*")
 public class MemberController {
 
     private final MemberService memberService;

@@ -13,6 +13,8 @@ import com.capstone.giftWeb.jwt.TokenProvider;
 import com.capstone.giftWeb.repository.MemberRepository;
 import com.capstone.giftWeb.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
 
     private static final String BEARER_TYPE = "bearer";
@@ -43,6 +46,15 @@ public class AuthService {
         member.setIp(SecurityUtil.getClientIp(request));
         memberRepository.save(member);
         return ResponseEntity.ok(MemberResponseDto.of(member));
+    }
+
+    public void logout(){
+        Long userId= SecurityUtil.getCurrentMemberId();
+        log.info(userId+" logout.");
+        Optional<RefreshToken> refreshToken= refreshTokenRepository.findById(userId);
+        if (refreshToken.isPresent()){
+            refreshTokenRepository.delete(refreshToken.get());
+        }
     }
 
     public ResponseEntity login(HttpServletRequest request, MemberLoginRequestDto requestDto) {

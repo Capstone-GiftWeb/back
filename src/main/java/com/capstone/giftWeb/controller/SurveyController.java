@@ -14,7 +14,6 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/survey")
-@CrossOrigin(originPatterns = "*")
 public class SurveyController {
 
     @Autowired
