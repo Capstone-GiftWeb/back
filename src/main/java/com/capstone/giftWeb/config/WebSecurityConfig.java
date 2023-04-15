@@ -1,6 +1,6 @@
 package com.capstone.giftWeb.config;
 
-import com.capstone.giftWeb.Service.CustomOAuth2UserService;
+import com.capstone.giftWeb.service.CustomOAuth2UserService;
 import com.capstone.giftWeb.jwt.JwtAccessDeniedHandler;
 import com.capstone.giftWeb.jwt.JwtAuthenticationEntryPoint;
 import com.capstone.giftWeb.jwt.TokenProvider;

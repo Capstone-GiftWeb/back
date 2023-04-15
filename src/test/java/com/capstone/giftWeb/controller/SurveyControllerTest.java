@@ -1,6 +1,6 @@
 package com.capstone.giftWeb.controller;
 
-import com.capstone.giftWeb.Service.SurveyService;
+import com.capstone.giftWeb.service.SurveyService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;

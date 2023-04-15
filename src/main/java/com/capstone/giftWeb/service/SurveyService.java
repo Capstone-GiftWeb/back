@@ -1,10 +1,8 @@
-package com.capstone.giftWeb.Service;
+package com.capstone.giftWeb.service;
 
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;

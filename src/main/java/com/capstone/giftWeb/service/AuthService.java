@@ -1,12 +1,9 @@
-package com.capstone.giftWeb.Service;
+package com.capstone.giftWeb.service;
 
 import com.capstone.giftWeb.config.SecurityUtil;
 import com.capstone.giftWeb.domain.Member;
 import com.capstone.giftWeb.domain.RefreshToken;
-import com.capstone.giftWeb.dto.MemberLoginRequestDto;
-import com.capstone.giftWeb.dto.MemberResponseDto;
-import com.capstone.giftWeb.dto.MemberSignUpRequestDto;
-import com.capstone.giftWeb.dto.TokenDto;
+import com.capstone.giftWeb.dto.*;
 import com.capstone.giftWeb.dto.error.CreateError;
 import com.capstone.giftWeb.enums.JwtCode;
 import com.capstone.giftWeb.jwt.TokenProvider;
@@ -32,6 +29,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailService emailService;
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
 
@@ -66,7 +64,13 @@ public class AuthService {
         String exIp=member.get().getIp();
         String newIp=SecurityUtil.getClientIp(request);
         if (!exIp.equals(newIp)){ //최근에 로그인했던 ip와 현재 로그인한 ip가 다를 경우
-            System.out.println("ip 다름");
+            log.info("exClientIp : "+exIp + " newClientIp : "+newIp);
+            MailDto mailDto = new MailDto();
+            mailDto.setAddress(member.get().getEmail());
+            mailDto.setTitle("기존 ip와 다른 ip에서 접속한 것이 발견되었습니다.");
+            mailDto.setContent("새로운 ip : "+newIp);
+
+            emailService.sendMail(mailDto);
         }
 
 
