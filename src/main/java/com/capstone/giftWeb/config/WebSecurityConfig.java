@@ -1,6 +1,6 @@
 package com.capstone.giftWeb.config;
 
-import com.capstone.giftWeb.Service.CustomOAuth2UserService;
+import com.capstone.giftWeb.service.CustomOAuth2UserService;
 import com.capstone.giftWeb.jwt.JwtAccessDeniedHandler;
 import com.capstone.giftWeb.jwt.JwtAuthenticationEntryPoint;
 import com.capstone.giftWeb.jwt.TokenProvider;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Configuration
 @EnableWebSecurity
 @Component
-public class WebSecurityConfig {
+public class WebSecurityConfig{
 
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

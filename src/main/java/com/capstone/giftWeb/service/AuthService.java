@@ -1,18 +1,17 @@
-package com.capstone.giftWeb.Service;
+package com.capstone.giftWeb.service;
 
 import com.capstone.giftWeb.config.SecurityUtil;
 import com.capstone.giftWeb.domain.Member;
 import com.capstone.giftWeb.domain.RefreshToken;
-import com.capstone.giftWeb.dto.MemberLoginRequestDto;
-import com.capstone.giftWeb.dto.MemberResponseDto;
-import com.capstone.giftWeb.dto.MemberSignUpRequestDto;
-import com.capstone.giftWeb.dto.TokenDto;
+import com.capstone.giftWeb.dto.*;
 import com.capstone.giftWeb.dto.error.CreateError;
 import com.capstone.giftWeb.enums.JwtCode;
 import com.capstone.giftWeb.jwt.TokenProvider;
 import com.capstone.giftWeb.repository.MemberRepository;
 import com.capstone.giftWeb.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,18 +29,30 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailService emailService;
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
 
     private static final String BEARER_TYPE = "bearer";
 
-    public ResponseEntity signup(MemberSignUpRequestDto requestDto) {
+    public ResponseEntity signup(HttpServletRequest request,MemberSignUpRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
             return new CreateError().error("이미 가입되어 있는 유저입니다");
         }
 
         Member member = requestDto.toMember(passwordEncoder);
+        member.setIp(SecurityUtil.getClientIp(request));
         memberRepository.save(member);
         return ResponseEntity.ok(MemberResponseDto.of(member));
+    }
+
+    public void logout(){
+        Long userId= SecurityUtil.getCurrentMemberId();
+        log.info(userId+" logout.");
+        Optional<RefreshToken> refreshToken= refreshTokenRepository.findById(userId);
+        if (refreshToken.isPresent()){
+            refreshTokenRepository.delete(refreshToken.get());
+        }
     }
 
     public ResponseEntity login(HttpServletRequest request, MemberLoginRequestDto requestDto) {
@@ -50,6 +61,12 @@ public class AuthService {
         if (member.isEmpty()) {
             return new CreateError().error("이메일이 맞지 않습니다.");
         }
+        String exIp=member.get().getIp();
+        String newIp=SecurityUtil.getClientIp(request);
+        if (!exIp.equals(newIp)){ //최근에 로그인했던 ip와 현재 로그인한 ip가 다를 경우
+            sendMail(member,exIp,newIp);
+        }
+
 
         // 비밀번호 검사
         if (!passwordEncoder.matches(requestDto.getPassword(), member.get().getPassword())) {
@@ -75,6 +92,16 @@ public class AuthService {
             refreshTokenRepository.save(newToken);
         }
         return ResponseEntity.ok(tokenDto);
+    }
+
+    private void sendMail(Optional<Member> member,String exIp,String newIp){
+        log.info("exClientIp : "+exIp + " newClientIp : "+newIp);
+        MailDto mailDto = new MailDto();
+        mailDto.setAddress(member.get().getEmail());
+        mailDto.setTitle("기존 ip와 다른 ip에서 접속한 것이 발견되었습니다.");
+        mailDto.setContent("새로운 ip : "+newIp);
+
+        emailService.sendMail(mailDto);
     }
 
     //token 앞에 "Bearer-" 제거

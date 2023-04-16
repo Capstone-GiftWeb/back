@@ -1,4 +1,4 @@
-package com.capstone.giftWeb.survice;
+package com.capstone.giftWeb.service;
 
 import com.capstone.giftWeb.domain.Gift;
 import com.capstone.giftWeb.repository.GiftRepository;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class GiftCrollingTest {
+public class GiftServiceTest {
 
     private WebDriver driver;
 
@@ -38,7 +38,7 @@ public class GiftCrollingTest {
 
 
     @BeforeAll
-    static void 셋업() {
+    static void all셋업() {
         System.setProperty("webdriver.chrome.driver", "./chromedriver/chromedriver.exe");
     }
 

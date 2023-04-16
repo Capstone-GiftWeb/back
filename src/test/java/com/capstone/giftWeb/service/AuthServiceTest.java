@@ -1,9 +1,8 @@
-package com.capstone.giftWeb.Service;
+package com.capstone.giftWeb.service;
 
 import com.capstone.giftWeb.domain.Member;
 import com.capstone.giftWeb.dto.MemberResponseDto;
 import com.capstone.giftWeb.dto.MemberSignUpRequestDto;
-import com.capstone.giftWeb.enums.Authority;
 import com.capstone.giftWeb.jwt.TokenProvider;
 import com.capstone.giftWeb.repository.MemberRepository;
 import com.capstone.giftWeb.repository.RefreshTokenRepository;
@@ -12,17 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.transaction.Transactional;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -72,7 +66,9 @@ class AuthServiceTest {
         doReturn(member).when(memberRepository).save(member);
 
         // when
-        ResponseEntity response = authService.signup(requestDto);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("HTTP_CLIENT_IP","127.0.0.1");
+        ResponseEntity response = authService.signup(request,requestDto);
 
         // then
         Member saveMember=memberRepository.save(member);

@@ -1,16 +1,14 @@
 package com.capstone.giftWeb.controller;
 
-import com.capstone.giftWeb.Service.GiftService;
+import com.capstone.giftWeb.service.GiftService;
 import com.capstone.giftWeb.domain.Gift;
 import com.capstone.giftWeb.dto.GiftsDto;
 import com.capstone.giftWeb.dto.WordsDto;
 import com.capstone.giftWeb.enums.Field;
 import com.capstone.giftWeb.enums.GiftOrderType;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
