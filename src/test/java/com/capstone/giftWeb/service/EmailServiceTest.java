@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class EmailServiceTest {
@@ -15,12 +20,15 @@ public class EmailServiceTest {
     private EmailService emailService;
 
     @Test
-    void 메일보내기() {
+    void 메일보내기() throws ExecutionException, InterruptedException {
         MailDto mailDto = new MailDto();
-        mailDto.setAddress("rmagksfla000@naver.com");
-        mailDto.setTitle("Test Email");
-        mailDto.setContent("This is a test email.");
+        mailDto.setAddress("dlwjddus8958@naver.com");
+        mailDto.setTitle("안녕");
+        mailDto.setContent("나는 한림이야. 테스트 메일을 보내볼게. 얍!");
 
-        emailService.sendMail(mailDto);
+        CompletableFuture<String> future=emailService.sendMail(mailDto);
+
+        String result = future.get();
+        assertThat(result).isEqualTo("send succeed");
     }
 }

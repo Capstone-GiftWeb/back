@@ -64,13 +64,7 @@ public class AuthService {
         String exIp=member.get().getIp();
         String newIp=SecurityUtil.getClientIp(request);
         if (!exIp.equals(newIp)){ //최근에 로그인했던 ip와 현재 로그인한 ip가 다를 경우
-            log.info("exClientIp : "+exIp + " newClientIp : "+newIp);
-            MailDto mailDto = new MailDto();
-            mailDto.setAddress(member.get().getEmail());
-            mailDto.setTitle("기존 ip와 다른 ip에서 접속한 것이 발견되었습니다.");
-            mailDto.setContent("새로운 ip : "+newIp);
-
-            emailService.sendMail(mailDto);
+            sendMail(member,exIp,newIp);
         }
 
 
@@ -98,6 +92,16 @@ public class AuthService {
             refreshTokenRepository.save(newToken);
         }
         return ResponseEntity.ok(tokenDto);
+    }
+
+    private void sendMail(Optional<Member> member,String exIp,String newIp){
+        log.info("exClientIp : "+exIp + " newClientIp : "+newIp);
+        MailDto mailDto = new MailDto();
+        mailDto.setAddress(member.get().getEmail());
+        mailDto.setTitle("기존 ip와 다른 ip에서 접속한 것이 발견되었습니다.");
+        mailDto.setContent("새로운 ip : "+newIp);
+
+        emailService.sendMail(mailDto);
     }
 
     //token 앞에 "Bearer-" 제거
