@@ -2,12 +2,10 @@ package com.capstone.giftWeb.dto;
 
 import com.capstone.giftWeb.domain.Member;
 import com.capstone.giftWeb.enums.Gender;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
