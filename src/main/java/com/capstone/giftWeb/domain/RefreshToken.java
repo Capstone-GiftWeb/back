@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.index.Indexed;
 import javax.validation.constraints.NotBlank;
 
 @Builder
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @RedisHash(value = "refreshToken", timeToLive = 1000 * 60 * 60 * 24 * 14) // 2주
 public class RefreshToken {
