@@ -1,0 +1,107 @@
+package com.capstone.giftWeb.controller;
+
+import com.capstone.giftWeb.config.WebSecurityConfig;
+import com.capstone.giftWeb.dto.MemberSignUpRequestDto;
+import com.capstone.giftWeb.dto.error.CreateError;
+import com.capstone.giftWeb.jwt.JwtAccessDeniedHandler;
+import com.capstone.giftWeb.jwt.JwtAuthenticationEntryPoint;
+import com.capstone.giftWeb.jwt.TokenProvider;
+import com.capstone.giftWeb.service.AuthService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.catalina.security.SecurityConfig;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static org.assertj.core.api.AssertionsForClassTypes.not;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@AutoConfigureMockMvc
+@SpringBootTest
+@EnableWebMvc
+public class AuthControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockBean
+    AuthService authService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Test
+    public void 회원가입성공() throws Exception {
+        // Given
+        MemberSignUpRequestDto requestDto = new MemberSignUpRequestDto();
+        String password="test1234";
+        requestDto.setName("test");
+        requestDto.setPassword(password);
+        requestDto.setEmail("test@example.com");
+        requestDto.setGender("남자");
+        requestDto.setAge(23);
+
+        when(authService.signup(any(HttpServletRequest.class), eq(requestDto)))
+                .thenReturn(ResponseEntity.ok(new ObjectMapper().writeValueAsString(requestDto.toMember(passwordEncoder))));
+
+        // When
+        ResultActions resultActions = mockMvc.perform(
+                post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(requestDto))
+        );
+
+        resultActions
+                .andExpect(status().isOk());
+        // Then
+    }
+
+    @Test
+    public void testSignupFail() throws Exception {
+        // Given
+        MemberSignUpRequestDto requestDto = new MemberSignUpRequestDto();
+        requestDto.setName("");
+        requestDto.setPassword("test1234");
+        requestDto.setEmail("test@example.com");
+        requestDto.setGender("남자");
+        requestDto.setAge(23);
+
+        String errorMessage = "이름을 입력해주세요.";
+
+        ResponseEntity expectedError = new CreateError().error(errorMessage);
+
+        when(authService.signup(any(HttpServletRequest.class), eq(requestDto)))
+                .thenReturn(expectedError);
+
+        // When
+        ResultActions resultActions = mockMvc.perform(
+                post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(requestDto))
+        );
+
+        // Then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage").value(errorMessage));
+    }
+}
