@@ -40,16 +40,20 @@ class GiftSearchRepositoryTest {
 
         Gift gift1 = new Gift();
         gift1.setId(1L);
-        gift1.setTitle("gift1");
+        gift1.setTitle("1gift1");
         Gift gift2 = new Gift();
         gift2.setId(2L);
-        gift2.setTitle("gift2");
+        gift2.setTitle("2gift2");
         Gift gift3 = new Gift();
         gift3.setId(3L);
-        gift3.setTitle("gift3");
+        gift3.setTitle("3gift3");
+        Gift gift4 = new Gift();
+        gift4.setId(4L);
+        gift4.setTitle("4item4");
         entityManager.persist(gift1);
         entityManager.persist(gift2);
         entityManager.persist(gift3);
+        entityManager.persist(gift4);
 
         // when
         List<String> result = giftSearchRepository.wordSearchShow(searchWord);
