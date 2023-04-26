@@ -82,6 +82,8 @@ public class GiftService {
         for (int i = 1; i < 11; i++) {
             getCategoryDataList(url + "/" + i, i);
         }
+        getCategoryDataList(url + "/" + 20, 20);  //반려동물
+
     }
 
 //    private List<String> getAllDataList() {
