@@ -39,6 +39,9 @@ public class WebSecurityConfig{
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic().disable()
+                .cors().configurationSource(corsConfigurationSource())
+
+                .and()
                 .formLogin().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -54,10 +57,8 @@ public class WebSecurityConfig{
                 .anyRequest().authenticated()
 
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider))
+                .apply(new JwtSecurityConfig(tokenProvider));
 
-                .and()
-                .cors(cors->cors.disable());
 
         return http.build();
     }
