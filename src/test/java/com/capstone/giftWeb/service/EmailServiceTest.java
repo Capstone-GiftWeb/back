@@ -22,7 +22,7 @@ public class EmailServiceTest {
     @Test
     void 메일보내기() throws ExecutionException, InterruptedException {
         MailDto mailDto = new MailDto();
-        mailDto.setAddress("dlwjddus8958@naver.com");
+        mailDto.setAddress("wlgus7040@naver.com");
         mailDto.setTitle("안녕");
         mailDto.setContent("나는 한림이야. 테스트 메일을 보내볼게. 얍!");
 
