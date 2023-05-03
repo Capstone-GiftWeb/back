@@ -35,7 +35,7 @@ public class RecommendService {
     }
 
 
-    public List<Gift> recommend(Long userId) throws TasteException, SQLException {
+    public List<Gift> recommend(Long userId, Long categoryId) throws TasteException, SQLException {
         RandomUtils.useTestSeed(); // to randomize the evaluation result
 
         //DataModel model = new FileDataModel(new File("src/main/java/com/capstone/giftWeb/Service/dataset-recsys.csv"));
@@ -80,19 +80,35 @@ public class RecommendService {
         Statement stmt = conn.createStatement();
 
         for (RecommendedItem recommendedItem : recommendations) {
-
-            String sql = "select * from gift where gift_id = " + recommendedItem.getItemID();
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()) {
-                Gift tmp = new Gift();
-                tmp.setId(Long.valueOf(rs.getInt("gift_id")));
-                tmp.setTitle(rs.getString("title"));
-                tmp.setCompany(rs.getString("company"));
-                tmp.setPrice(rs.getInt("price"));
-                tmp.setCategory(rs.getInt("category"));
-                tmp.setImage(rs.getString("image"));
-                tmp.setHref(rs.getString("href"));
-                recommendedGifts.add(tmp);
+            if (categoryId == 0) {
+                String sql = "select * from gift where gift_id = " + recommendedItem.getItemID();
+                ResultSet rs = stmt.executeQuery(sql);
+                while(rs.next()) {
+                    Gift tmp = new Gift();
+                    tmp.setId(Long.valueOf(rs.getInt("gift_id")));
+                    tmp.setTitle(rs.getString("title"));
+                    tmp.setCompany(rs.getString("company"));
+                    tmp.setPrice(rs.getInt("price"));
+                    tmp.setCategory(rs.getInt("category"));
+                    tmp.setImage(rs.getString("image"));
+                    tmp.setHref(rs.getString("href"));
+                    recommendedGifts.add(tmp);
+                }
+            }
+            else {
+                String sql = "select * from gift where gift_id = " + recommendedItem.getItemID() + " and category = " + categoryId;
+                ResultSet rs = stmt.executeQuery(sql);
+                while(rs.next()) {
+                    Gift tmp = new Gift();
+                    tmp.setId(Long.valueOf(rs.getInt("gift_id")));
+                    tmp.setTitle(rs.getString("title"));
+                    tmp.setCompany(rs.getString("company"));
+                    tmp.setPrice(rs.getInt("price"));
+                    tmp.setCategory(rs.getInt("category"));
+                    tmp.setImage(rs.getString("image"));
+                    tmp.setHref(rs.getString("href"));
+                    recommendedGifts.add(tmp);
+                }
             }
         }
         stmt.close();

@@ -28,10 +28,11 @@ public class GiftController {
 
 
     @GetMapping("/product/{number}/liked")
-    public void likesGift(@PathVariable("number") String number, HttpServletResponse response) throws SQLException, IOException {
+    public void likesGift(@PathVariable("number") String number) throws SQLException, IOException {
         Long userId = SecurityUtil.getCurrentMemberId();
         recommendService.giftLiked(userId, Long.parseLong(number));
-        response.sendRedirect("https://gift.kakao.com/product/"+number);
+
+        //response.sendRedirect("https://gift.kakao.com/product/"+number);
     }
 
     @GetMapping("/product/{number}")

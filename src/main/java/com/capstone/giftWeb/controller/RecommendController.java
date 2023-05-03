@@ -34,7 +34,21 @@ public class RecommendController {
         Long userId = SecurityUtil.getCurrentMemberId();
 
         //this.recommendDto = recommendDto;
-        List<Gift> recommendedGiftList = recommendService.recommend(userId);
+        List<Gift> recommendedGiftList = recommendService.recommend(userId, 0L);
+        //recommendDto.setRecommendedItemList(recommendedItemList);
+        //JSONObject recommendedObj = new JSONObject();
+        //recommendedObj.put("recommendedList", recommendedItemList);
+        return recommendedGiftList;
+        //model.addAttribute("RecommendedList", recommendedItemList);
+    }
+
+    @GetMapping("/{categoryNum}")
+    public List<Gift> calculate(@PathVariable("categoryNum") String categoryId) throws TasteException, SQLException {
+        System.out.println("Hello");
+        Long userId = SecurityUtil.getCurrentMemberId();
+
+        //this.recommendDto = recommendDto;
+        List<Gift> recommendedGiftList = recommendService.recommend(userId, Long.parseLong(categoryId));
         //recommendDto.setRecommendedItemList(recommendedItemList);
         //JSONObject recommendedObj = new JSONObject();
         //recommendedObj.put("recommendedList", recommendedItemList);
