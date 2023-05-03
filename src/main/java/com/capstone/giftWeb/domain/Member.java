@@ -35,6 +35,8 @@ public class Member implements Serializable {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    private String ip;
+
 
     public boolean matchPassword(String password){
         return this.password.equals(password);

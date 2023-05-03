@@ -1,34 +1,32 @@
 package com.capstone.giftWeb.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
-@Getter
-@Setter
-@Entity
+@Builder
+@Getter @Setter
 @NoArgsConstructor
+@RedisHash(value = "refreshToken", timeToLive = 1000 * 60 * 60 * 24 * 14) // 2주
 public class RefreshToken {
 
+    @NotBlank
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "refresh_token_id")
-    private Long id;
-    @NotBlank
-    private String token;
-    @NotBlank
-    private String memberEmail;
+    private Long memberId;
 
-    public RefreshToken(String memberEmail, String token) {
-        this.memberEmail = memberEmail;
+
+    @Indexed
+    private String token;
+    public RefreshToken(Long memberId,String token) {
+        this.memberId=memberId;
         this.token = token;
     }
 
-    public static RefreshToken createToken(String userId, String token){
-        return new RefreshToken(userId, token);
+    public static RefreshToken createToken(Long memberId,String token) {
+        return new RefreshToken(memberId,token);
     }
 
 

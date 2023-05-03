@@ -1,6 +1,6 @@
 package com.capstone.giftWeb.controller;
 
-import com.capstone.giftWeb.Service.SurveyService;
+import com.capstone.giftWeb.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
