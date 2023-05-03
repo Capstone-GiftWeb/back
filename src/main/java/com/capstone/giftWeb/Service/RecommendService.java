@@ -1,9 +1,10 @@
 package com.capstone.giftWeb.Service;
+import com.capstone.giftWeb.domain.Gift;
+import com.capstone.giftWeb.dto.GiftsDto;
 import com.capstone.giftWeb.dto.RecommendDto;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.eval.RecommenderBuilder;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
-import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
 import org.apache.mahout.cf.taste.impl.model.jdbc.MySQLJDBCDataModel;
 import org.apache.mahout.cf.taste.impl.neighborhood.NearestNUserNeighborhood;
 import org.apache.mahout.cf.taste.impl.recommender.GenericUserBasedRecommender;
@@ -19,116 +20,38 @@ import org.apache.mahout.common.RandomUtils;
 import org.mariadb.jdbc.MariaDbDataSource;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class RecommendService {
     private RecommendDto recommendDto;
 
+    private GiftsDto giftsDto;
+
     public void getRecommendDto(RecommendDto recommendDto) {
         this.recommendDto = recommendDto;
     }
 
-    public List<RecommendedItem> recommend(int id) throws IOException, TasteException, SQLException {
+
+    public List<Gift> recommend(Long userId) throws IOException, TasteException, SQLException {
         RandomUtils.useTestSeed(); // to randomize the evaluation result
 
-        DataModel model = new FileDataModel(new File("src/main/java/com/capstone/giftWeb/Service/dataset-recsys.csv"));
+        //DataModel model = new FileDataModel(new File("src/main/java/com/capstone/giftWeb/Service/dataset-recsys.csv"));
 
         MariaDbDataSource dataSource = new MariaDbDataSource();
         dataSource.setServerName("localhost");
         dataSource.setUser("root");
         dataSource.setPassword("byeonguk");
         dataSource.setDatabaseName("capstone");
-        JDBCDataModel model1 =
-                new MySQLJDBCDataModel(dataSource, "preference", "member_id", "category_id", "pref_score", null);
-
-        /*
-        final String driver = "org.mariadb.jdbc.Driver";
-        final String DB_IP = "localhost";
-        final String DB_PORT = "3306";
-        final String DB_NAME = "capstone";
-        final String DB_URL = "jdbc:mariadb://" + DB_IP + ":" + DB_PORT + "/" + DB_NAME;
-
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            Class.forName(driver);
-            conn = DriverManager.getConnection(DB_URL, "root", "byeonguk");
-            if (conn != null) {
-                System.out.println("DB 접속 성공");
-            }
-        } catch (ClassNotFoundException e) {
-            System.out.println("드라이버 로드 실패");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.out.println("DB 접속 실패");
-            e.printStackTrace();
-        }
-
-        try {
-            String sql = "select * from capstone.preference";
-
-            pstmt = conn.prepareStatement(sql);
-
-            rs = pstmt.executeQuery();
-            Long memberId = null;
-            Long categoryId = null;
-            Float prevScore = null;
-            Boolean doLike = null;
-            Long clicks = null;
-            Float prefScore = null;
-
-            while (rs.next()) {
-                memberId = Long.parseLong(rs.getString(1));
-                categoryId = Long.parseLong(rs.getString(2));
-                prevScore = Float.parseFloat(rs.getString(3));
-                doLike = Boolean.parseBoolean(rs.getString(4));
-                clicks = Long.parseLong(rs.getString(5));
-
-                if (prefScore < 10) {
-                    prefScore = Float.parseFloat(rs.getString(6));
-                    if (doLike) {
-                        prefScore += 3;
-                    }
-                    prefScore = (float) (prefScore + Float.parseFloat(clicks.toString()) * 0.5);
-                }
-            }
-
-            System.out.println(memberId);
-            System.out.println(categoryId);
-            System.out.println("previous score is : " + prevScore);
-            System.out.println("Liked? > " + doLike);
-            System.out.println(prefScore);
-
-        } catch (SQLException e) {
-            System.out.println("error: " + e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        */
+        dataSource.setPortNumber(3307);
+        JDBCDataModel model =
+                new MySQLJDBCDataModel(dataSource, "gift_pref", "member_id", "gift_id", "pref_score", null);
 
         long key = 0;
         FastByIDMap<PreferenceArray> preferences = new FastByIDMap<PreferenceArray>();
-
 
         RecommenderBuilder recommenderBuilder = new RecommenderBuilder() {
             public Recommender buildRecommender(DataModel model) throws TasteException {
@@ -141,22 +64,40 @@ public class RecommendService {
 
                 // nn보다 잠재적 요인 방법이 효율적으로 보이나, 향후 테스트하고 우선적으로 nn 사용
                 // neighborhood size = 100
-                UserNeighborhood neighborhood = new NearestNUserNeighborhood(100, similarity, model);
+                UserNeighborhood neighborhood = new NearestNUserNeighborhood(40, similarity, model);
                 // user-based recommender 반환
                 return new GenericUserBasedRecommender(model, neighborhood, similarity);
             }
         };
 
         // 여기서는 user-based recommender이 반환되어 recommender에 들어감
-        Recommender recommender = recommenderBuilder.buildRecommender(model1);
+        Recommender recommender = recommenderBuilder.buildRecommender(model);
         // 유저 id 1에게 5개의 아이템을 추천해줌
-        List<RecommendedItem> recommendations = recommender.recommend(1, 5);
+        List<RecommendedItem> recommendations = recommender.recommend(userId, 20);
+        List<Gift> recommendedGifts = new ArrayList<Gift>();
+
+        // JDBC connection
+        Connection conn = dataSource.getConnection();
+        Statement stmt = conn.createStatement();
 
         for (RecommendedItem recommendedItem : recommendations) {
-            System.out.println(recommendedItem);
+
+            String sql = "select * from gift where gift_id = " + recommendedItem.getItemID();
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()) {
+                Gift tmp = new Gift();
+                tmp.setId(Long.valueOf(rs.getInt("gift_id")));
+                tmp.setTitle(rs.getString("title"));
+                tmp.setCompany(rs.getString("company"));
+                tmp.setPrice(rs.getInt("price"));
+                tmp.setCategory(rs.getInt("category"));
+                tmp.setImage(rs.getString("image"));
+                tmp.setHref(rs.getString("href"));
+                recommendedGifts.add(tmp);
+            }
         }
 
-        return recommendations;
+        return recommendedGifts;
     }
     /*
     public static void main(String[] args) throws IOException, TasteException {
@@ -208,9 +149,4 @@ public class RecommendService {
     }
     */
 
-    /*
-    public List<RecommendedItem> RecommendItem(File file) throws Exception {
-
-    }
-    */
 }

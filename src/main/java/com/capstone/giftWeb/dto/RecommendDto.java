@@ -12,5 +12,6 @@ import java.util.List;
 @Getter
 @Setter
 public class RecommendDto {
+    private Long userId;
     private List<RecommendedItem> recommendedItemList;
 }

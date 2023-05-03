@@ -15,6 +15,7 @@ public class GiftSearchRepository {
     public GiftSearchRepository(JPAQueryFactory jpaQueryFactory){
         this.jpaQueryFactory=jpaQueryFactory;
     }
+
     public List<String> wordSearchShow(String searchWord) {
         return jpaQueryFactory.select(gift.title)
                 .from(gift)
