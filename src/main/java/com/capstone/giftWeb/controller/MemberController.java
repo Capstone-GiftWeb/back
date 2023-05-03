@@ -1,36 +1,34 @@
 package com.capstone.giftWeb.controller;
 
-import com.capstone.giftWeb.Service.MemberService;
-import com.capstone.giftWeb.domain.Member;
-import com.capstone.giftWeb.dto.MemberForm;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.capstone.giftWeb.service.MemberService;
+import com.capstone.giftWeb.dto.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/members")
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/member")
 public class MemberController {
 
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
 
-    @GetMapping("/new")
-    public String memberForm() {
-
-        return "member/createMemberForm";
+    @GetMapping("/me")
+    public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
+        MemberResponseDto myInfoBySecurity = memberService.getMyInfoBySecurity();
+        System.out.println(myInfoBySecurity.getName());
+        return ResponseEntity.ok((myInfoBySecurity));
+        // return ResponseEntity.ok(memberService.getMyInfoBySecurity());
     }
 
-    @PostMapping("/new")
-    public String createMember(MemberForm memberForm){
-        Member member=new Member();
-        member.setName(memberForm.getName());
-        member.setEmail(memberForm.getEmail());
-        member.setPassword(memberForm.getPassword());
-        memberService.createMember(member);
+//    @PostMapping("/name")
+//    public ResponseEntity<MemberResponseDto> setMemberName(@RequestBody MemberRequestDto request) {
+//        return ResponseEntity.ok(memberService.changeMemberName(request.getEmail(), request.getName()));
+//    }
 
-        return "redirect:/";
+    @PostMapping("/password")
+    public ResponseEntity<MemberResponseDto> setMemberPassword(@RequestBody ChangePasswordRequestDto request) {
+        return ResponseEntity.ok(memberService.changeMemberPassword(request.getEmail(),request.getExPassword(), request.getNewPassword()));
     }
 
 }

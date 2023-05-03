@@ -5,6 +5,10 @@
     <title>하이</title>
 </head>
 <body>
-<p>하이</p>
+<table>
+    <tr th:each="gift : ${gifts}">
+        <td th:utext="${gift}"></td>
+    </tr>
+</table>
 </body>
 </html>
