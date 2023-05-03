@@ -1,6 +1,6 @@
 package com.capstone.giftWeb.controller;
 
-import com.capstone.giftWeb.Service.RecommendService;
+import com.capstone.giftWeb.service.RecommendService;
 import com.capstone.giftWeb.config.SecurityUtil;
 import com.capstone.giftWeb.domain.Gift;
 import com.capstone.giftWeb.dto.RecommendDto;

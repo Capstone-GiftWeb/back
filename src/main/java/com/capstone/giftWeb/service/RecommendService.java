@@ -1,4 +1,4 @@
-package com.capstone.giftWeb.Service;
+package com.capstone.giftWeb.service;
 import com.capstone.giftWeb.domain.Gift;
 import com.capstone.giftWeb.dto.GiftsDto;
 import com.capstone.giftWeb.dto.RecommendDto;
@@ -20,7 +20,6 @@ import org.apache.mahout.common.RandomUtils;
 import org.mariadb.jdbc.MariaDbDataSource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ public class RecommendService {
     }
 
 
-    public List<Gift> recommend(Long userId) throws IOException, TasteException, SQLException {
+    public List<Gift> recommend(Long userId) throws TasteException, SQLException {
         RandomUtils.useTestSeed(); // to randomize the evaluation result
 
         //DataModel model = new FileDataModel(new File("src/main/java/com/capstone/giftWeb/Service/dataset-recsys.csv"));
@@ -96,6 +95,8 @@ public class RecommendService {
                 recommendedGifts.add(tmp);
             }
         }
+        stmt.close();
+        conn.close();
 
         return recommendedGifts;
     }
@@ -148,5 +149,71 @@ public class RecommendService {
 
     }
     */
+    public void giftClicked(Long userId, Long giftId) throws SQLException {
+        MariaDbDataSource dataSource = new MariaDbDataSource();
+        dataSource.setServerName("localhost");
+        dataSource.setUser("root");
+        dataSource.setPassword("byeonguk");
+        dataSource.setDatabaseName("capstone");
+        dataSource.setPortNumber(3307);
 
+        Connection conn = dataSource.getConnection();
+        Statement stmt = conn.createStatement();
+        String sql = "select * from gift_pref where member_id = " + userId + " and gift_id = " + giftId;
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.next();
+        Float score = rs.getFloat("pref_score");
+        Long clicks = rs.getLong("clicks");
+        sql = "update gift_pref set pref_score = " + (score + 0.1) + " where member_id = " + userId + " and gift_id = " + giftId;
+        rs = stmt.executeQuery(sql);
+        sql = "update gift_pref set clicks = " + (clicks + 1) + " where member_id = " + userId + " and gift_id = " + giftId;
+        rs = stmt.executeQuery(sql);
+
+        stmt.close();
+        conn.close();
+    }
+
+    public void giftLiked(Long userId, Long giftId) throws SQLException {
+        MariaDbDataSource dataSource = new MariaDbDataSource();
+        dataSource.setServerName("localhost");
+        dataSource.setUser("root");
+        dataSource.setPassword("byeonguk");
+        dataSource.setDatabaseName("capstone");
+        dataSource.setPortNumber(3307);
+
+        Connection conn = dataSource.getConnection();
+        Statement stmt = conn.createStatement();
+        String sql = "select * from gift_pref where member_id = " + userId + " and gift_id = " + giftId;
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.next();
+        Float score = rs.getFloat("pref_score");
+        Long doLike = rs.getLong("do_like");
+        if (doLike == 0) {
+            if (score > 4.0F) {
+                score = 5.0F;
+            }
+            else {
+                score += 1.0F;
+            }
+            sql = "update gift_pref set pref_score = " + score + " where member_id = " + userId + " and gift_id = " + giftId;
+            rs = stmt.executeQuery(sql);
+            sql = "update gift_pref set do_like = " + 1 + " where member_id = " + userId + " and gift_id = " + giftId;
+            rs = stmt.executeQuery(sql);
+        }
+        else {
+            if (score < 2.0F) {
+                score = 1.0F;
+            }
+            else {
+                score -= 1.0F;
+            }
+            sql = "update gift_pref set pref_score = " + score + " where member_id = " + userId + " and gift_id = " + giftId;
+            rs = stmt.executeQuery(sql);
+            sql = "update gift_pref set do_like = " + 0 + " where member_id = " + userId + " and gift_id = " + giftId;
+            rs = stmt.executeQuery(sql);
+        }
+
+        stmt.close();
+        conn.close();
+    }
 }
