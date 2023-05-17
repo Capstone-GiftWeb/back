@@ -77,7 +77,7 @@ public class GiftService {
         return new ChromeDriver(options);
     }
 
-    @Scheduled(cron = "* * 0 * * *") // 하루에 한번? 자정
+    @Scheduled(cron = "* 19 17 * * *") // 하루에 한번? 자정
     private void getDataSchedule() {
         for (int i = 1; i < 11; i++) {
             getCategoryDataList(url + "/" + i, i);
