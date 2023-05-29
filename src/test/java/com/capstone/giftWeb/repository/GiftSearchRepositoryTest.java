@@ -30,7 +30,7 @@ class GiftSearchRepositoryTest {
     @BeforeEach
     void setUp(){
         JPAQueryFactory jpaQueryFactory= new JPAQueryFactory(entityManager);
-        giftSearchRepository=new GiftSearchRepository(jpaQueryFactory);
+        giftSearchRepository=new GiftSearchRepositoryImpl(jpaQueryFactory);
     }
 
     @Test
