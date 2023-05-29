@@ -42,7 +42,7 @@ public class RecommendController {
         //model.addAttribute("RecommendedList", recommendedItemList);
     }
 
-    @GetMapping("/{categoryNum}")
+    @GetMapping("categoryNumber/{categoryNum}")
     public List<Gift> calculate(@PathVariable("categoryNum") String categoryId) throws TasteException, SQLException {
         System.out.println("Hello");
         Long userId = SecurityUtil.getCurrentMemberId();
