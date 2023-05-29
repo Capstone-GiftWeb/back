@@ -5,6 +5,9 @@ import com.capstone.giftWeb.domain.Member;
 import com.capstone.giftWeb.domain.RefreshToken;
 import com.capstone.giftWeb.dto.*;
 import com.capstone.giftWeb.dto.error.CreateError;
+import com.capstone.giftWeb.dto.request.MemberLoginRequestDto;
+import com.capstone.giftWeb.dto.request.MemberSignUpRequestDto;
+import com.capstone.giftWeb.dto.response.MemberResponseDto;
 import com.capstone.giftWeb.enums.JwtCode;
 import com.capstone.giftWeb.jwt.TokenProvider;
 import com.capstone.giftWeb.repository.MemberRepository;
@@ -35,7 +38,7 @@ public class AuthService {
 
     private static final String BEARER_TYPE = "bearer";
 
-    public ResponseEntity signup(HttpServletRequest request,MemberSignUpRequestDto requestDto) {
+    public ResponseEntity signup(HttpServletRequest request, MemberSignUpRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
             return new CreateError().error("이미 가입되어 있는 유저입니다");
         }

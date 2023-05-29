@@ -1,4 +1,4 @@
-package com.capstone.giftWeb.dto;
+package com.capstone.giftWeb.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

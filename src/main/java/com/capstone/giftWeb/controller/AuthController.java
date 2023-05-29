@@ -1,8 +1,8 @@
 package com.capstone.giftWeb.controller;
 
 import com.capstone.giftWeb.service.AuthService;
-import com.capstone.giftWeb.dto.MemberLoginRequestDto;
-import com.capstone.giftWeb.dto.MemberSignUpRequestDto;
+import com.capstone.giftWeb.dto.request.MemberLoginRequestDto;
+import com.capstone.giftWeb.dto.request.MemberSignUpRequestDto;
 import com.capstone.giftWeb.dto.error.CreateError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

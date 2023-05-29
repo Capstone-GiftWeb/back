@@ -2,7 +2,7 @@ package com.capstone.giftWeb.service;
 
 import com.capstone.giftWeb.config.SecurityUtil;
 import com.capstone.giftWeb.domain.Member;
-import com.capstone.giftWeb.dto.MemberResponseDto;
+import com.capstone.giftWeb.dto.response.MemberResponseDto;
 import com.capstone.giftWeb.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

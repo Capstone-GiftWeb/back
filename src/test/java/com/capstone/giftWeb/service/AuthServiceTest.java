@@ -1,8 +1,8 @@
 package com.capstone.giftWeb.service;
 
 import com.capstone.giftWeb.domain.Member;
-import com.capstone.giftWeb.dto.MemberResponseDto;
-import com.capstone.giftWeb.dto.MemberSignUpRequestDto;
+import com.capstone.giftWeb.dto.response.MemberResponseDto;
+import com.capstone.giftWeb.dto.request.MemberSignUpRequestDto;
 import com.capstone.giftWeb.jwt.TokenProvider;
 import com.capstone.giftWeb.repository.MemberRepository;
 import com.capstone.giftWeb.repository.RefreshTokenRepository;

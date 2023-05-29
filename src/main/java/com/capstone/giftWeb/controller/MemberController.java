@@ -1,7 +1,8 @@
 package com.capstone.giftWeb.controller;
 
+import com.capstone.giftWeb.dto.request.ChangePasswordRequestDto;
+import com.capstone.giftWeb.dto.response.MemberResponseDto;
 import com.capstone.giftWeb.service.MemberService;
-import com.capstone.giftWeb.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

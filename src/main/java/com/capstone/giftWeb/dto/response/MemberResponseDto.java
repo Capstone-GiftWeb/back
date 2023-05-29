@@ -1,4 +1,4 @@
-package com.capstone.giftWeb.dto;
+package com.capstone.giftWeb.dto.response;
 
 import com.capstone.giftWeb.domain.Member;
 import com.capstone.giftWeb.enums.Gender;
