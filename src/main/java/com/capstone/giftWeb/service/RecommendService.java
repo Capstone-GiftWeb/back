@@ -43,7 +43,7 @@ public class RecommendService {
         MariaDbDataSource dataSource = new MariaDbDataSource();
         dataSource.setServerName("localhost");
         dataSource.setUser("root");
-        dataSource.setPassword("byeonguk");
+        dataSource.setPassword("password");
         dataSource.setDatabaseName("capstone");
         dataSource.setPortNumber(3307);
         JDBCDataModel model =
@@ -169,7 +169,7 @@ public class RecommendService {
         MariaDbDataSource dataSource = new MariaDbDataSource();
         dataSource.setServerName("localhost");
         dataSource.setUser("root");
-        dataSource.setPassword("byeonguk");
+        dataSource.setPassword("password");
         dataSource.setDatabaseName("capstone");
         dataSource.setPortNumber(3307);
 
@@ -193,7 +193,7 @@ public class RecommendService {
         MariaDbDataSource dataSource = new MariaDbDataSource();
         dataSource.setServerName("localhost");
         dataSource.setUser("root");
-        dataSource.setPassword("byeonguk");
+        dataSource.setPassword("passwordk");
         dataSource.setDatabaseName("capstone");
         dataSource.setPortNumber(3307);
 
